@@ -1,0 +1,112 @@
+{
+  "cafeteria": {
+    "title": "Carta Cafetería",
+    "subtitle": "Desayuno y merienda · 7 a 12 hs y 15 a 20 hs",
+    "pdf": "../assets/menu-cafeteria.pdf",
+    "products": [
+      {
+        "name": "Clásico Olivo",
+        "price": "Desayuno",
+        "category": "Favorito",
+        "description": "Café o té acompañado de medialunas o tostadas"
+      },
+      {
+        "name": "Tostado completo",
+        "price": "Desayuno",
+        "category": "Salado",
+        "description": "Jamón y queso en pan de campo"
+      },
+      {
+        "name": "Bowl de frutas",
+        "price": "Merienda",
+        "category": "Liviano",
+        "description": "Fruta fresca de estación con yogurt"
+      },
+      {
+        "name": "Cheesecake de frutos rojos",
+        "price": "Postre",
+        "category": "Dulce",
+        "description": "Base crocante y coulis casero"
+      },
+      {
+        "name": "Brownie con helado",
+        "price": "Postre",
+        "category": "Dulce",
+        "description": "Chocolate intenso con bocha de crema"
+      },
+      {
+        "name": "Café de especialidad",
+        "price": "Bebida",
+        "category": "Café",
+        "description": "Espresso, latte, cappuccino o flat white"
+      },
+      {
+        "name": "Jugo exprimido",
+        "price": "Bebida",
+        "category": "Frescos",
+        "description": "Naranja, pomelo o licuado del día"
+      },
+      {
+        "name": "Medialunas al horno",
+        "price": "Panadería",
+        "category": "Horneados",
+        "description": "Dulces o saladas, recién hechas"
+      }
+    ]
+  },
+  "restaurante": {
+    "title": "Carta Restaurante",
+    "subtitle": "Almuerzo y cena · 12 a 15 hs y 20 a 24 hs",
+    "pdf": "../assets/menu-restaurante.pdf",
+    "products": [
+      {
+        "name": "Bowl verde",
+        "price": "Entrada",
+        "category": "Frescos",
+        "description": "Hojas, quinoa, palta y seeds"
+      },
+      {
+        "name": "Ensalada César",
+        "price": "Entrada",
+        "category": "Clásicos",
+        "description": "Pollo grillé, crutones y parmesano"
+      },
+      {
+        "name": "Milanesa napolitana",
+        "price": "Principal",
+        "category": "Casa",
+        "description": "Con papas fritas o ensalada"
+      },
+      {
+        "name": "Bife de chorizo",
+        "price": "Principal",
+        "category": "Parrilla",
+        "description": "A punto, con guarnición a elección"
+      },
+      {
+        "name": "Pasta al pesto",
+        "price": "Principal",
+        "category": "Pastas",
+        "description": "Tallarines caseros con pesto de albahaca"
+      },
+      {
+        "name": "Hamburguesa Olivo",
+        "price": "Principal",
+        "category": "Favorito",
+        "description": "Doble carne, cheddar y bacon"
+      },
+      {
+        "name": "Pizza muzzarella",
+        "price": "Principal",
+        "category": "Horno",
+        "description": "Masa a la piedra"
+      },
+      {
+        "name": "Tabla para compartir",
+        "price": "Para picar",
+        "category": "Mesa",
+        "description": "Fiambres, quesos y pan de campo"
+      }
+    ]
+  }
+}

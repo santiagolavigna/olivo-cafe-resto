@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<title>Olivo Café Resto · Tour 360°</title>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, minimal-ui" />
+<style> @-ms-viewport { width: device-width; } </style>
+<link rel="icon" type="image/png" href="../assets/img/logo.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="vendor/reset.min.css">
+<link rel="stylesheet" href="style.css?v=olivo4">
+</head>
+<body class="multiple-scenes ">
+
+<div id="pano"></div>
+
+<header class="app-navbar" id="appNavbar" role="banner">
+  <a href="javascript:void(0)" id="sceneListToggle" class="nav-icon-btn" aria-label="Abrir o cerrar lista de espacios" title="Espacios">
+    <img class="icon off" src="img/expand.png" alt="">
+    <img class="icon on" src="img/collapse.png" alt="">
+  </a>
+  <div id="titleBar" class="nav-title-cluster">
+    <span class="nav-brand">olivo</span>
+    <h1 class="sceneName"></h1>
+  </div>
+  <div class="nav-tools">
+    <a href="javascript:void(0)" id="fullscreenToggle" class="nav-icon-btn" aria-label="Pantalla completa" title="Pantalla completa">
+      <img class="icon off" src="img/fullscreen.png" alt="">
+      <img class="icon on" src="img/windowed.png" alt="">
+    </a>
+    <a href="../" id="siteBackBtn" class="nav-back-home" aria-label="Volver al sitio de Olivo" title="Volver al sitio">
+      <svg class="nav-back-home__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+        <path fill="currentColor" d="M14.7 5.3a1 1 0 0 1 0 1.4L10.4 11H20a1 1 0 1 1 0 2h-9.6l4.3 4.3a1 1 0 1 1-1.4 1.4l-6-6a1 1 0 0 1 0-1.4l6-6a1 1 0 0 1 1.4 0z"/>
+      </svg>
+      <span class="nav-back-home__text">Volver al sitio</span>
+    </a>
+  </div>
+</header>
+
+<div id="sceneList">
+  <ul class="scenes">
+    
+      <a href="javascript:void(0)" class="scene" data-id="0-fixsys">
+        <li class="text">Salón</li>
+      </a>
+    
+      <a href="javascript:void(0)" class="scene" data-id="1-ingreso">
+        <li class="text">Ingreso</li>
+      </a>
+    
+      <a href="javascript:void(0)" class="scene" data-id="2-calle-maipu">
+        <li class="text">Exterior</li>
+      </a>
+    
+    <a href="https://www.nuvola.services" class="scene scene-nuvola-link" target="_blank" rel="noopener noreferrer">
+      <li class="text">
+        <img src="img/nuvola-cloud-icon.png" alt="" class="scene-nuvola-icon">
+        <span>www.nuvola.services</span>
+      </li>
+    </a>
+  </ul>
+</div>
+
+<nav class="view-controls-dock" aria-label="Controles de vista">
+  <a href="javascript:void(0)" id="viewUp" class="viewControlButton viewControlButton-1">
+    <img class="icon" src="img/up.png" alt="">
+  </a>
+  <a href="javascript:void(0)" id="viewDown" class="viewControlButton viewControlButton-2">
+    <img class="icon" src="img/down.png" alt="">
+  </a>
+  <a href="javascript:void(0)" id="viewLeft" class="viewControlButton viewControlButton-3">
+    <img class="icon" src="img/left.png" alt="">
+  </a>
+  <a href="javascript:void(0)" id="viewRight" class="viewControlButton viewControlButton-4">
+    <img class="icon" src="img/right.png" alt="">
+  </a>
+  <a href="javascript:void(0)" id="viewIn" class="viewControlButton viewControlButton-5">
+    <img class="icon" src="img/plus.png" alt="">
+  </a>
+  <a href="javascript:void(0)" id="viewOut" class="viewControlButton viewControlButton-6">
+    <img class="icon" src="img/minus.png" alt="">
+  </a>
+</nav>
+
+<script src="vendor/es5-shim.js"></script>
+<script src="vendor/eventShim.js"></script>
+<script src="vendor/classList.js"></script>
+<script src="vendor/requestAnimationFrame.js" ></script>
+<script src="vendor/screenfull.min.js" ></script>
+<script src="vendor/bowser.min.js" ></script>
+<script src="vendor/marzipano.js" ></script>
+
+<script src="data.js"></script>
+<script src="index.js"></script>
+<script src="assets/mars2-product-catalog.js"></script>
+<script src="assets/add-overlay.js"></script>
+
+</body>
+</html>

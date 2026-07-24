@@ -1,0 +1,103 @@
+/* Respaldo si se carga por <link>; el layout crítico va embebido en add-overlay.js */
+#intro-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 12000;
+  background: rgba(8, 8, 10, 0.6);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  cursor: pointer;
+}
+
+#intro-overlay.hidden {
+  display: none !important;
+}
+
+.intro-overlay-middle {
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  z-index: 12002;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+  pointer-events: none;
+}
+
+.intro-overlay-brand {
+  position: fixed;
+  left: 50%;
+  top: 62%;
+  transform: translate(-50%, -50%);
+  z-index: 12002;
+  text-align: center;
+  font: 500 15px/1.25 "Plus Jakarta Sans", Helvetica, Arial, sans-serif;
+  letter-spacing: 0.04em;
+  color: rgba(255, 255, 255, 0.55);
+  text-decoration: none;
+  pointer-events: auto;
+  white-space: nowrap;
+}
+
+.intro-overlay-brand:hover {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.img360-pulse {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.img360-pulse-inner {
+  transform-origin: center center;
+  animation: introBreath 2.4s ease-in-out infinite;
+}
+
+@keyframes introBreath {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.9;
+  }
+  50% {
+    transform: scale(1.09);
+    opacity: 0.68;
+  }
+}
+
+#intro-overlay .arrow-slot {
+  position: fixed;
+  z-index: 12001;
+  width: 40px;
+  height: 40px;
+  pointer-events: none;
+}
+
+#intro-overlay .arrow-slot.arrow-up {
+  left: 50%;
+  top: 8%;
+  transform: translateX(-50%);
+}
+
+#intro-overlay .arrow-slot.arrow-down {
+  left: 50%;
+  bottom: 8%;
+  top: auto;
+  transform: translateX(-50%);
+}
+
+#intro-overlay .arrow-slot.arrow-left {
+  left: 6%;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+#intro-overlay .arrow-slot.arrow-right {
+  right: 6%;
+  left: auto;
+  top: 50%;
+  transform: translateY(-50%);
+}
