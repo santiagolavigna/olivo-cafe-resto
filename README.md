@@ -1,19 +1,30 @@
-# Olivo Café Resto — Chivilcoy
+# Olivo Café Resto
 
-Sitio + tour virtual 360° para la sucursal de Chivilcoy.
+Demo cliente: landing + carta interactiva (libro) + tour 360°.
 
-## Ver en local
+## URLs en vivo
 
-- Web: http://localhost/OLIVO/
-- Tour: http://localhost/OLIVO/vr/?autostart=1
-
-## Qué incluye
-
-- Landing con experiencia visual y cartas
-- Tour 360° con iconos de **Cafetería** y **Restaurante**
-- Cartas PDF oficiales + menú digital en pantalla completa
-- Contacto y reserva por WhatsApp
+- Chivilcoy: https://santiagolavigna.github.io/olivo-cafe-resto/
+- Multisucursal: https://santiagolavigna.github.io/olivo-cafe-resto/multisucursal/
+- Carta (libro): https://santiagolavigna.github.io/olivo-cafe-resto/carta/
+- Tour 360°: https://santiagolavigna.github.io/olivo-cafe-resto/vr/?autostart=1
 
 ## Local
 
-Hipólito Yrigoyen 1, Chivilcoy · 2346 455790
+```bash
+# con XAMPP
+http://localhost/OLIVO/
+http://localhost/OLIVO/multisucursal/
+http://localhost/OLIVO/carta/?carta=cafeteria
+```
+
+## Qué incluye
+
+- **Landing Chivilcoy** — reservar / menú / 360°
+- **Landing multisucursal** — Bragado · Chivilcoy · 9 de Julio (deriva a cada local)
+- **Carta tipo libro** — PDF renderizado con pdf.js + page-flip (deslizá / scroll para pasar página)
+- Tour 360° con iconos de cafetería y restaurante
+
+## Local Chivilcoy
+
+Hipólito Yrigoyen 1 · 2346 455790
