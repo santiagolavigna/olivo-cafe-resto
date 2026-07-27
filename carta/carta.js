@@ -19,21 +19,21 @@
   var retryBtn = document.getElementById('retryBtn');
 
   var pageFlip = null;
+  var simpleMode = false;
+  var simpleIndex = 0;
+  var simpleImages = [];
   var loadToken = 0;
   var loading = false;
   var currentKey = 'cafeteria';
   var builtNarrow = null;
   var watchdog = null;
   var PAPER = '#fdfbf2';
-  var LOAD_TIMEOUT_MS = 18000;
+  var LOAD_TIMEOUT_MS = 16000;
   var cache = {};
 
   function configurePdf() {
     if (!window.pdfjsLib) return;
-    /* Worker remoto falla a veces (CDN / mobile). Render en main thread. */
-    try {
-      window.pdfjsLib.GlobalWorkerOptions.workerSrc = '';
-    } catch (e) { /* noop */ }
+    try { window.pdfjsLib.GlobalWorkerOptions.workerSrc = ''; } catch (e) { /* noop */ }
   }
 
   function isNarrowScreen() {
@@ -79,6 +79,7 @@
     loading = false;
     loader.hidden = true;
     bookWrap.hidden = true;
+    bookWrap.classList.remove('is-mounting');
     controls.hidden = true;
     bookError.hidden = false;
   }
@@ -89,6 +90,7 @@
     loader.hidden = true;
     bookError.hidden = true;
     bookWrap.hidden = false;
+    bookWrap.classList.remove('is-mounting');
     controls.hidden = false;
   }
 
@@ -140,6 +142,16 @@
     });
   }
 
+  function blankPageDataUrl(width, height) {
+    var c = document.createElement('canvas');
+    c.width = Math.max(2, width || 800);
+    c.height = Math.max(2, height || 1100);
+    var ctx = c.getContext('2d');
+    ctx.fillStyle = PAPER;
+    ctx.fillRect(0, 0, c.width, c.height);
+    return c.toDataURL('image/jpeg', 0.7);
+  }
+
   function renderPdfToImages(file, token, overlap) {
     return window.pdfjsLib.getDocument({
       url: file,
@@ -150,8 +162,8 @@
     }).promise.then(function (pdf) {
       var pages = [];
       var split = false;
-      var dpr = Math.min(window.devicePixelRatio || 1, 1.15);
-      var baseTarget = Math.round((overlap ? 520 : 640) * dpr);
+      var dpr = Math.min(window.devicePixelRatio || 1, 1.1);
+      var baseTarget = Math.round((overlap ? 500 : 620) * dpr);
 
       function renderPage(n) {
         if (token !== loadToken) return Promise.reject(new Error('cancelled'));
@@ -159,7 +171,7 @@
         return pdf.getPage(n).then(function (page) {
           var base = page.getViewport({ scale: 1 });
           if (n === 1) split = base.height / base.width < 1.05;
-          var targetW = (split ? 2 : 1) * Math.min(900, Math.max(480, baseTarget));
+          var targetW = (split ? 2 : 1) * Math.min(860, Math.max(460, baseTarget));
           var viewport = page.getViewport({ scale: targetW / base.width });
           var canvas = document.createElement('canvas');
           canvas.width = Math.max(1, Math.floor(viewport.width));
@@ -182,7 +194,7 @@
         if (!pages.length) throw new Error('empty');
         if (!split) {
           return {
-            images: pages.map(function (c) { return c.toDataURL('image/jpeg', 0.74); }),
+            images: pages.map(function (c) { return c.toDataURL('image/jpeg', 0.72); }),
             ratio: pages[0].height / pages[0].width
           };
         }
@@ -197,7 +209,7 @@
             half.height = canvas.height;
             var hctx = half.getContext('2d', { alpha: false });
             hctx.drawImage(canvas, srcX, 0, halfW, canvas.height, 0, 0, halfW, canvas.height);
-            images.push(half.toDataURL('image/jpeg', 0.74));
+            images.push(half.toDataURL('image/jpeg', 0.72));
           });
         });
 
@@ -215,24 +227,24 @@
     var stageH = Math.max(stage.clientHeight - 16, 320);
     var narrow = isNarrowScreen();
     var maxW = Math.min(
-      560,
+      520,
       Math.floor(stageH / safeRatio),
       narrow ? stageW : Math.floor(stageW / 2)
     );
     maxW = Math.max(180, maxW);
-    var minW = Math.min(220, maxW);
-    var baseW = Math.max(minW, Math.min(maxW, Math.floor(stageW * 0.92)));
+    var minW = Math.min(200, maxW);
+    var baseW = Math.max(minW, Math.min(maxW, Math.floor(stageW * 0.9)));
     return {
       width: baseW,
-      height: Math.max(240, Math.floor(baseW * safeRatio)),
-      minWidth: minW,
-      maxWidth: maxW,
-      minHeight: Math.floor(minW * safeRatio),
-      maxHeight: Math.floor(maxW * safeRatio)
+      height: Math.max(240, Math.floor(baseW * safeRatio))
     };
   }
 
   function updatePageInfo() {
+    if (simpleMode) {
+      pageInfo.textContent = (simpleIndex + 1) + ' / ' + simpleImages.length;
+      return;
+    }
     if (!pageFlip) return;
     try {
       pageInfo.textContent = (pageFlip.getCurrentPageIndex() + 1) + ' / ' + pageFlip.getPageCount();
@@ -244,45 +256,79 @@
       try { pageFlip.destroy(); } catch (e) { /* noop */ }
       pageFlip = null;
     }
+    simpleMode = false;
+    simpleImages = [];
+    simpleIndex = 0;
     var old = document.getElementById('book');
-    if (!old || !old.parentNode) {
-      var wrap = bookWrap || stage;
-      var freshEmpty = document.createElement('div');
-      freshEmpty.id = 'book';
-      wrap.appendChild(freshEmpty);
-      return freshEmpty;
-    }
     var fresh = document.createElement('div');
     fresh.id = 'book';
-    old.parentNode.replaceChild(fresh, old);
+    if (old && old.parentNode) old.parentNode.replaceChild(fresh, old);
+    else bookWrap.appendChild(fresh);
     return fresh;
   }
 
+  function mountSimple(images, ratio) {
+    var el = destroyBook();
+    simpleMode = true;
+    simpleImages = images.slice();
+    simpleIndex = 0;
+    el.className = 'carta-simple';
+    var size = bookSize(ratio);
+    el.style.width = size.width + 'px';
+    el.style.maxWidth = '100%';
+    el.innerHTML = '<img alt="Página de la carta" draggable="false" />';
+    var img = el.querySelector('img');
+    img.src = simpleImages[0];
+    showBook();
+    updatePageInfo();
+  }
+
+  function mountFlip(images, ratio) {
+    var el = destroyBook();
+    var size = bookSize(ratio);
+    var pages = images.slice();
+    if (pages.length % 2 === 1) {
+      pages.push(blankPageDataUrl(800, Math.round(800 * ratio)));
+    }
+
+    /* PageFlip se rompe si el contenedor está display:none.
+       Lo mostramos invisible, montamos, y recién ahí revelamos. */
+    bookWrap.hidden = false;
+    bookWrap.classList.add('is-mounting');
+
+    pageFlip = new window.St.PageFlip(el, {
+      width: size.width,
+      height: size.height,
+      size: 'fixed',
+      minWidth: size.width,
+      maxWidth: size.width,
+      minHeight: size.height,
+      maxHeight: size.height,
+      showCover: false,
+      maxShadowOpacity: 0.4,
+      flippingTime: 700,
+      mobileScrollSupport: false,
+      usePortrait: true,
+      autoSize: false
+    });
+    pageFlip.loadFromImages(pages);
+    pageFlip.on('flip', updatePageInfo);
+    showBook();
+    updatePageInfo();
+  }
+
   function mountBook(result) {
+    if (!result || !result.images || !result.images.length) {
+      throw new Error('empty');
+    }
     try {
-      var el = destroyBook();
-      var size = bookSize(result.ratio);
-      pageFlip = new window.St.PageFlip(el, {
-        width: size.width,
-        height: size.height,
-        size: 'stretch',
-        minWidth: size.minWidth,
-        maxWidth: size.maxWidth,
-        minHeight: size.minHeight,
-        maxHeight: size.maxHeight,
-        showCover: false,
-        maxShadowOpacity: 0.45,
-        flippingTime: 750,
-        mobileScrollSupport: false,
-        usePortrait: true,
-        autoSize: true
-      });
-      pageFlip.loadFromImages(result.images);
-      pageFlip.on('flip', updatePageInfo);
-      showBook();
-      updatePageInfo();
+      if (!window.St || !window.St.PageFlip) {
+        mountSimple(result.images, result.ratio);
+        return;
+      }
+      mountFlip(result.images, result.ratio);
     } catch (e) {
-      throw e;
+      mountSimple(result.images, result.ratio);
     }
   }
 
@@ -297,6 +343,7 @@
     setTabs(key);
     loader.hidden = false;
     bookWrap.hidden = true;
+    bookWrap.classList.remove('is-mounting');
     controls.hidden = true;
     bookError.hidden = true;
     setLoaderMsg('Preparando la carta…');
@@ -304,34 +351,32 @@
     clearWatchdog();
     watchdog = setTimeout(function () {
       if (token === loadToken && loading) showError();
-    }, LOAD_TIMEOUT_MS + 4000);
+    }, LOAD_TIMEOUT_MS + 3000);
 
-    var start = Promise.resolve();
+    var work;
     if (cache[keyId] && !opts.force) {
-      start = waitLayout().then(function () {
-        if (token !== loadToken) return null;
+      work = waitLayout().then(function () {
+        if (token !== loadToken) return;
         setLoaderMsg('Armando el libro…');
         mountBook(cache[keyId]);
-        return null;
       });
     } else {
-      start = waitForLibs(10000)
+      work = waitForLibs(10000)
         .then(function () { return waitLayout(); })
         .then(function () {
           if (token !== loadToken) return null;
           return withTimeout(renderPdfToImages(MENUS[key].file, token, overlap), LOAD_TIMEOUT_MS);
         })
         .then(function (result) {
-          if (token !== loadToken) return null;
+          if (token !== loadToken) return;
           if (!result) throw new Error('empty');
           cache[keyId] = result;
           setLoaderMsg('Armando el libro…');
           mountBook(result);
-          return null;
         });
     }
 
-    start.catch(function (err) {
+    work.catch(function (err) {
       if (token !== loadToken) return;
       if (err && err.message === 'cancelled') return;
       if (!opts.retried) {
@@ -339,7 +384,7 @@
         setTimeout(function () {
           if (token !== loadToken) return;
           loadMenu(key, { force: true, retried: true });
-        }, 400);
+        }, 350);
         return;
       }
       showError();
@@ -347,7 +392,16 @@
   }
 
   function flip(dir) {
-    if (!pageFlip || loading) return;
+    if (loading) return;
+    if (simpleMode) {
+      if (!simpleImages.length) return;
+      simpleIndex = Math.max(0, Math.min(simpleImages.length - 1, simpleIndex + (dir > 0 ? 1 : -1)));
+      var img = document.querySelector('#book img');
+      if (img) img.src = simpleImages[simpleIndex];
+      updatePageInfo();
+      return;
+    }
+    if (!pageFlip) return;
     try {
       if (dir > 0) pageFlip.flipNext();
       else pageFlip.flipPrev();
@@ -409,7 +463,6 @@
     }
   }, { passive: true });
 
-  /* Solo recargar al cruzar mobile/desktop, no en cada resize del browser chrome. */
   var narrowQuery = window.matchMedia('(max-width: 759px)');
   function onBreakpointChange() {
     if (loading) return;
