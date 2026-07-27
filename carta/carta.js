@@ -101,7 +101,7 @@
   }
 
   function loadManifest() {
-    return fetch('./pages/manifest.json?v=20260727f', { cache: 'no-cache' })
+    return fetch('./pages/manifest.json?v=20260727g', { cache: 'no-cache' })
       .then(function (r) {
         if (!r.ok) throw new Error('manifest');
         return r.json();
