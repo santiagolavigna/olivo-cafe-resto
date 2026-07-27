@@ -1,0 +1,23 @@
+{
+  "cafeteria": [
+    "./pages/cafeteria/01.jpg",
+    "./pages/cafeteria/02.jpg",
+    "./pages/cafeteria/03.jpg",
+    "./pages/cafeteria/04.jpg",
+    "./pages/cafeteria/05.jpg",
+    "./pages/cafeteria/06.jpg"
+  ],
+  "restaurante": [
+    "./pages/restaurante/01.jpg",
+    "./pages/restaurante/02.jpg",
+    "./pages/restaurante/03.jpg",
+    "./pages/restaurante/04.jpg",
+    "./pages/restaurante/05.jpg",
+    "./pages/restaurante/06.jpg",
+    "./pages/restaurante/07.jpg",
+    "./pages/restaurante/08.jpg",
+    "./pages/restaurante/09.jpg",
+    "./pages/restaurante/10.jpg",
+    "./pages/restaurante/11.jpg"
+  ]
+}

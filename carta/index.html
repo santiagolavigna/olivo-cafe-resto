@@ -2,111 +2,48 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <title>Nuestra carta · Olivo Café Resto</title>
-  <meta name="description" content="La carta de Olivo Café Resto, para hojear como un libro." />
+  <meta name="description" content="La carta de Olivo Café Resto. Deslizá para ver cafetería y restaurante." />
   <meta name="theme-color" content="#141a12" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
   <link rel="icon" type="image/svg+xml" href="../assets/img/logo.svg" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin />
-  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="./carta.css?v=20260727c" />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="./carta.css?v=20260727f" />
 </head>
 <body>
-  <header class="carta-header">
-    <a class="carta-back" id="cartaBack" href="../">
-      <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" d="M15 5l-7 7 7 7"/></svg>
-      <span>Volver</span>
+  <header class="top">
+    <a class="top__btn" id="backBtn" href="../" aria-label="Volver">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" d="M15 5l-7 7 7 7"/></svg>
     </a>
-    <div class="carta-brand">
-      <span class="carta-brand__word">olivo</span>
-      <span class="carta-brand__sub">Nuestra carta</span>
+    <div class="top__tabs" role="tablist" aria-label="Tipo de carta">
+      <button type="button" class="top__tab is-active" role="tab" aria-selected="true" data-menu="cafeteria">Cafetería</button>
+      <button type="button" class="top__tab" role="tab" aria-selected="false" data-menu="restaurante">Restaurante</button>
     </div>
-    <a class="carta-pdf" id="pdfLink" href="../assets/menu-cafeteria.pdf" target="_blank" rel="noopener" aria-label="Descargar PDF">
+    <a class="top__btn" id="pdfBtn" href="../assets/menu-cafeteria.pdf" target="_blank" rel="noopener" aria-label="Abrir PDF">
       <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M12 4v11m0 0l-4-4m4 4l4-4M5 19h14"/></svg>
-      <span>PDF</span>
     </a>
   </header>
 
-  <nav class="carta-tabs" aria-label="Elegir carta">
-    <button type="button" class="carta-tab is-active" data-menu="cafeteria">Cafetería</button>
-    <button type="button" class="carta-tab" data-menu="restaurante">Restaurante</button>
-  </nav>
-
-  <main class="carta-stage" id="stage">
-    <div class="carta-loader" id="loader">
-      <span class="carta-loader__ring" aria-hidden="true"></span>
-      <p>Preparando la carta…</p>
-    </div>
-    <div class="carta-book-wrap" id="bookWrap" hidden>
-      <div id="book"></div>
-    </div>
-    <p class="carta-error" id="bookError" hidden>
-      No pudimos cargar la carta acá.
-      <button type="button" class="carta-retry" id="retryBtn">Reintentar</button>
-      ·
-      <a id="errorPdfLink" href="../assets/menu-cafeteria.pdf" target="_blank" rel="noopener">Abrila en PDF</a>.
-    </p>
+  <main class="viewer" id="viewer" aria-label="Carta Olivo">
+    <div class="rail" id="rail"></div>
   </main>
 
-  <footer class="carta-controls" id="controls" hidden>
-    <button type="button" class="carta-arrow" id="prevBtn" aria-label="Página anterior">
-      <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" d="M15 5l-7 7 7 7"/></svg>
+  <footer class="dock">
+    <button type="button" class="dock__arrow" id="prevBtn" aria-label="Anterior">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" d="M15 5l-7 7 7 7"/></svg>
     </button>
-    <div class="carta-progress">
-      <span class="carta-pageinfo" id="pageInfo">– / –</span>
-      <span class="carta-hint">Arrastrá o deslizá la página</span>
+    <div class="dock__meta">
+      <span id="pageLabel">1 / 1</span>
+      <span class="dock__hint">Deslizá para pasar</span>
     </div>
-    <button type="button" class="carta-arrow" id="nextBtn" aria-label="Página siguiente">
-      <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+    <button type="button" class="dock__arrow" id="nextBtn" aria-label="Siguiente">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
     </button>
   </footer>
 
-  <script>
-    (function () {
-      function loadScript(src, fallback) {
-        return new Promise(function (resolve, reject) {
-          var s = document.createElement('script');
-          s.src = src;
-          s.async = false;
-          s.onload = function () { resolve(); };
-          s.onerror = function () {
-            if (!fallback) { reject(new Error(src)); return; }
-            var s2 = document.createElement('script');
-            s2.src = fallback;
-            s2.async = false;
-            s2.onload = function () { resolve(); };
-            s2.onerror = function () { reject(new Error(fallback)); };
-            document.head.appendChild(s2);
-          };
-          document.head.appendChild(s);
-        });
-      }
-
-      loadScript(
-        'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js',
-        'https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js'
-      )
-        .then(function () {
-          return loadScript(
-            'https://cdn.jsdelivr.net/npm/page-flip@2.0.7/dist/js/page-flip.browser.js',
-            'https://unpkg.com/page-flip@2.0.7/dist/js/page-flip.browser.js'
-          );
-        })
-        .then(function () {
-          var app = document.createElement('script');
-          app.src = './carta.js?v=20260727c';
-          document.body.appendChild(app);
-        })
-        .catch(function () {
-          var err = document.getElementById('bookError');
-          var loader = document.getElementById('loader');
-          if (loader) loader.hidden = true;
-          if (err) err.hidden = false;
-        });
-    })();
-  </script>
+  <script src="./carta.js?v=20260727f" defer></script>
 </body>
 </html>
