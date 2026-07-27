@@ -9,6 +9,7 @@
   var stage = document.getElementById('stage');
   var bookWrap = document.getElementById('bookWrap');
   var loader = document.getElementById('loader');
+  var loaderText = document.querySelector('#loader p');
   var controls = document.getElementById('controls');
   var pageInfo = document.getElementById('pageInfo');
   var bookError = document.getElementById('bookError');
@@ -20,10 +21,11 @@
   var loadToken = 0;
   var currentKey = 'cafeteria';
   var builtNarrow = null;
-
   var PAPER = '#fdfbf2';
+  var LOAD_TIMEOUT_MS = 22000;
 
-  if (window.pdfjsLib) {
+  function setWorker() {
+    if (!window.pdfjsLib) return;
     window.pdfjsLib.GlobalWorkerOptions.workerSrc =
       'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
   }
@@ -33,8 +35,7 @@
   }
 
   function menuKeyFromUrl() {
-    var q = new URLSearchParams(window.location.search).get('carta') || '';
-    q = q.toLowerCase();
+    var q = (new URLSearchParams(window.location.search).get('carta') || '').toLowerCase();
     if (q.indexOf('rest') === 0 || q === 'resto') return 'restaurante';
     return 'cafeteria';
   }
@@ -50,21 +51,73 @@
     window.history.replaceState(null, '', url.toString());
   }
 
+  function setLoaderMsg(msg) {
+    if (loaderText) loaderText.textContent = msg;
+  }
+
+  function showError() {
+    loader.hidden = true;
+    bookWrap.hidden = true;
+    controls.hidden = true;
+    bookError.hidden = false;
+  }
+
+  function waitForLibs(timeoutMs) {
+    return new Promise(function (resolve, reject) {
+      var start = Date.now();
+      (function tick() {
+        if (window.pdfjsLib && window.St && window.St.PageFlip) {
+          setWorker();
+          resolve();
+          return;
+        }
+        if (Date.now() - start > timeoutMs) {
+          reject(new Error('libs'));
+          return;
+        }
+        setTimeout(tick, 80);
+      })();
+    });
+  }
+
+  function withTimeout(promise, ms) {
+    return new Promise(function (resolve, reject) {
+      var done = false;
+      var timer = setTimeout(function () {
+        if (done) return;
+        done = true;
+        reject(new Error('timeout'));
+      }, ms);
+      promise.then(function (value) {
+        if (done) return;
+        done = true;
+        clearTimeout(timer);
+        resolve(value);
+      }, function (err) {
+        if (done) return;
+        done = true;
+        clearTimeout(timer);
+        reject(err);
+      });
+    });
+  }
+
   /* Landscape menu pages are split into two book pages.
-     Wide screens: exact halves, so the open spread rebuilds the original page.
-     Phones: overlapping halves (each side keeps an extra strip of the middle)
-     so no column of the menu is ever cut off at the page edge. */
+     Wide screens: exact halves. Phones: overlapping halves so columns stay readable. */
   function renderPdfToImages(file, token, overlap) {
-    return window.pdfjsLib.getDocument(file).promise.then(function (pdf) {
+    return window.pdfjsLib.getDocument({ url: file, withCredentials: false }).promise.then(function (pdf) {
       var pages = [];
       var split = false;
+      var dpr = Math.min(window.devicePixelRatio || 1, 1.25);
+      var baseTarget = Math.round(640 * dpr);
 
       function renderPage(n) {
         if (token !== loadToken) return Promise.reject(new Error('cancelled'));
+        setLoaderMsg('Preparando página ' + n + ' de ' + pdf.numPages + '…');
         return pdf.getPage(n).then(function (page) {
           var base = page.getViewport({ scale: 1 });
           if (n === 1) split = base.height / base.width < 1.05;
-          var targetW = (split ? 2 : 1) * Math.min(1100, Math.max(720, 720 * (window.devicePixelRatio || 1)));
+          var targetW = (split ? 2 : 1) * Math.min(960, Math.max(560, baseTarget));
           var viewport = page.getViewport({ scale: targetW / base.width });
           var canvas = document.createElement('canvas');
           canvas.width = Math.floor(viewport.width);
@@ -84,9 +137,10 @@
       }
 
       return chain.then(function () {
+        if (!pages.length) throw new Error('empty');
         if (!split) {
           return {
-            images: pages.map(function (c) { return c.toDataURL('image/jpeg', 0.84); }),
+            images: pages.map(function (c) { return c.toDataURL('image/jpeg', 0.78); }),
             ratio: pages[0].height / pages[0].width
           };
         }
@@ -101,7 +155,7 @@
             half.height = canvas.height;
             var hctx = half.getContext('2d', { alpha: false });
             hctx.drawImage(canvas, srcX, 0, halfW, canvas.height, 0, 0, halfW, canvas.height);
-            images.push(half.toDataURL('image/jpeg', 0.84));
+            images.push(half.toDataURL('image/jpeg', 0.78));
           });
         });
 
@@ -136,14 +190,12 @@
 
   function updatePageInfo() {
     if (!pageFlip) return;
-    var total = pageFlip.getPageCount();
-    var idx = pageFlip.getCurrentPageIndex() + 1;
-    pageInfo.textContent = idx + ' / ' + total;
+    pageInfo.textContent = (pageFlip.getCurrentPageIndex() + 1) + ' / ' + pageFlip.getPageCount();
   }
 
   function destroyBook() {
     if (pageFlip) {
-      try { pageFlip.destroy(); } catch (e) { /* instance may be mid-render */ }
+      try { pageFlip.destroy(); } catch (e) { /* noop */ }
       pageFlip = null;
     }
     var old = document.getElementById('book');
@@ -162,45 +214,46 @@
     bookWrap.hidden = true;
     controls.hidden = true;
     bookError.hidden = true;
+    setLoaderMsg('Preparando la carta…');
 
-    if (!window.pdfjsLib || !window.St) {
-      loader.hidden = true;
-      bookError.hidden = false;
-      return;
-    }
+    waitForLibs(8000)
+      .then(function () {
+        if (token !== loadToken) return null;
+        return withTimeout(renderPdfToImages(MENUS[key].file, token, builtNarrow), LOAD_TIMEOUT_MS);
+      })
+      .then(function (result) {
+        if (!result || token !== loadToken) return;
+        setLoaderMsg('Armando el libro…');
+        var el = destroyBook();
+        var size = bookSize(result.ratio);
 
-    renderPdfToImages(MENUS[key].file, token, builtNarrow).then(function (result) {
-      if (token !== loadToken) return;
-      var el = destroyBook();
-      var size = bookSize(result.ratio);
+        pageFlip = new window.St.PageFlip(el, {
+          width: size.width,
+          height: size.height,
+          size: 'stretch',
+          minWidth: size.minWidth,
+          maxWidth: size.maxWidth,
+          minHeight: size.minHeight,
+          maxHeight: size.maxHeight,
+          showCover: false,
+          maxShadowOpacity: 0.45,
+          flippingTime: 750,
+          mobileScrollSupport: false,
+          usePortrait: true,
+          autoSize: true
+        });
+        pageFlip.loadFromImages(result.images);
+        pageFlip.on('flip', updatePageInfo);
 
-      pageFlip = new window.St.PageFlip(el, {
-        width: size.width,
-        height: size.height,
-        size: 'stretch',
-        minWidth: size.minWidth,
-        maxWidth: size.maxWidth,
-        minHeight: size.minHeight,
-        maxHeight: size.maxHeight,
-        showCover: false,
-        maxShadowOpacity: 0.45,
-        flippingTime: 750,
-        mobileScrollSupport: false,
-        usePortrait: true,
-        autoSize: true
+        loader.hidden = true;
+        bookWrap.hidden = false;
+        controls.hidden = false;
+        updatePageInfo();
+      })
+      .catch(function (err) {
+        if (token !== loadToken || (err && err.message === 'cancelled')) return;
+        showError();
       });
-      pageFlip.loadFromImages(result.images);
-      pageFlip.on('flip', updatePageInfo);
-
-      loader.hidden = true;
-      bookWrap.hidden = false;
-      controls.hidden = false;
-      updatePageInfo();
-    }).catch(function (err) {
-      if (token !== loadToken || (err && err.message === 'cancelled')) return;
-      loader.hidden = true;
-      bookError.hidden = false;
-    });
   }
 
   function flip(dir) {
@@ -224,7 +277,6 @@
     if (e.key === 'ArrowLeft' || e.key === 'ArrowUp' || e.key === 'PageUp') flip(-1);
   });
 
-  /* Desktop: scroll wheel turns pages */
   var lastWheel = 0;
   window.addEventListener('wheel', function (e) {
     var now = Date.now();
@@ -233,8 +285,6 @@
     flip(e.deltaY > 0 ? 1 : -1);
   }, { passive: true });
 
-  /* Mobile: vertical swipe (scroll gesture) also turns pages;
-     horizontal drag is handled natively by the flipbook. */
   var touchStartX = 0, touchStartY = 0, touchTracking = false;
   stage.addEventListener('touchstart', function (e) {
     if (e.touches.length !== 1) { touchTracking = false; return; }
@@ -253,8 +303,6 @@
     }
   }, { passive: true });
 
-  /* Rebuild the book when crossing the phone/desktop breakpoint
-     (the split strategy differs between the two). */
   var resizeTimer = null;
   window.addEventListener('resize', function () {
     clearTimeout(resizeTimer);

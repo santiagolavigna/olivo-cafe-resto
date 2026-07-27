@@ -3,17 +3,17 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Olivo Café Resto · Bragado, Chivilcoy y 9 de Julio</title>
-  <meta name="description" content="Olivo Café Resto: una misma mesa en Bragado, Chivilcoy y 9 de Julio. Elegí tu sucursal, mirá la carta y reservá." />
+  <title>Olivo Café Resto · Elegí tu sucursal</title>
+  <meta name="description" content="Olivo Café Resto en Bragado, Chivilcoy y 9 de Julio. Elegí tu ciudad y conocé cada local." />
   <meta name="theme-color" content="#141a12" />
   <link rel="icon" type="image/svg+xml" href="../assets/img/logo.svg" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="../assets/css/styles.css" />
-  <link rel="stylesheet" href="./multi.css" />
+  <link rel="stylesheet" href="./hub.css" />
 </head>
-<body>
+<body class="hub-page">
   <div class="progress" id="scrollProgress" aria-hidden="true"><span></span></div>
 
   <header class="site-header" id="siteHeader">
@@ -21,191 +21,80 @@
       <span class="brand__word">olivo</span>
       <span class="brand__sub">Café + Resto</span>
     </a>
-    <button class="nav-toggle" id="navToggle" type="button" aria-label="Abrir menú" aria-expanded="false">
-      <span></span><span></span><span></span>
-    </button>
-    <nav class="site-nav" id="siteNav" aria-label="Principal">
-      <a href="#inicio">Inicio</a>
-      <a href="#sucursales">Sucursales</a>
-      <a href="#menu">Menú</a>
-      <a href="../vr/?autostart=1">Tour 360°</a>
-      <a class="nav-cta" href="#sucursales">Reservar</a>
+    <nav class="site-nav hub-nav" aria-label="Sucursales">
+      <a href="../bragado/">Bragado</a>
+      <a href="../chivilcoy/">Chivilcoy</a>
+      <a href="../nuevedejulio/">9 de Julio</a>
     </nav>
   </header>
 
   <main>
-    <section class="hero" id="inicio">
-      <div class="hero__stage" data-parallax-root>
-        <div class="hero__media" data-depth="0.1">
-          <img src="../assets/img/hero-v2.jpg" alt="Fachada de Olivo Café Resto de noche" width="1536" height="1024" />
-        </div>
-        <div class="hero__veil"></div>
-        <div class="hero__orb hero__orb--1" data-depth="0.28" aria-hidden="true"></div>
+    <section class="hub-hero" id="inicio">
+      <div class="hub-hero__bg" aria-hidden="true">
+        <img src="../assets/img/hero-v2.jpg" alt="" />
+        <div class="hub-hero__veil"></div>
+        <div class="hub-hero__glow"></div>
       </div>
-
-      <div class="hero__content">
-        <p class="hero__branch reveal" data-reveal>Bragado · Chivilcoy · 9 de Julio</p>
-        <h1 class="hero__brand reveal" data-reveal>olivo</h1>
-        <p class="hero__tagline reveal" data-reveal>
-          Una misma mesa en tres ciudades. Elegí tu Olivo más cercano, mirá la carta y reservá.
+      <div class="hub-hero__content">
+        <p class="hub-hero__eyebrow reveal" data-reveal>Tres ciudades</p>
+        <h1 class="hub-hero__brand reveal" data-reveal>olivo</h1>
+        <p class="hub-hero__line reveal" data-reveal>
+          Una misma mesa. Elegí tu ciudad y entrá a cada experiencia.
         </p>
-        <div class="hero__actions reveal" data-reveal>
-          <a class="btn btn--primary" href="#sucursales">Reservar mesa</a>
-          <a class="btn btn--primary" href="#menu">Menú</a>
-          <a class="btn btn--ghost" href="../vr/?autostart=1">olivo 360°</a>
-        </div>
-        <dl class="hero__meta reveal" data-reveal>
-          <div>
-            <dt>Sucursales</dt>
-            <dd>Bragado · Chivilcoy · 9 de Julio</dd>
-          </div>
-          <div>
-            <dt>Desde</dt>
-            <dd>Bragado, nuestra casa madre</dd>
-          </div>
-        </dl>
+        <a class="btn btn--primary reveal" data-reveal href="#sucursales">Ver sucursales</a>
       </div>
-
-      <div class="hero__hint" aria-hidden="true"><span>Deslizá</span><i></i></div>
+      <div class="hub-hero__hint" aria-hidden="true"><span>Elegí</span><i></i></div>
     </section>
 
-    <section class="sucursales reveal-scope" id="sucursales">
-      <div class="sucursales__intro reveal reveal--soft" data-reveal>
-        <p class="eyebrow">Sucursales</p>
-        <h2>Encontrá tu Olivo</h2>
-        <p>Tres locales, la misma esencia. Entrá al sitio de cada sucursal o reservá directo por WhatsApp.</p>
-      </div>
+    <section class="hub-cities" id="sucursales" aria-label="Sucursales Olivo">
+      <a class="hub-city hub-city--bragado reveal reveal--lift" data-reveal href="../bragado/">
+        <div class="hub-city__media">
+          <img src="../assets/img/sucursal-1.jpg" alt="" loading="lazy" />
+          <div class="hub-city__shade"></div>
+        </div>
+        <div class="hub-city__body">
+          <span class="hub-city__tag">Casa madre</span>
+          <h2>Bragado</h2>
+          <p>Alsina 355 · Donde empezó todo</p>
+          <span class="hub-city__cta">Entrar a la sucursal</span>
+        </div>
+      </a>
 
-      <div class="sucursales__grid">
-        <article class="sucursal reveal reveal--lift" data-reveal>
-          <div class="sucursal__media">
-            <img src="../assets/img/sucursal-1.jpg" alt="Olivo Bragado" loading="lazy" />
-            <span class="sucursal__badge">Casa madre</span>
-          </div>
-          <div class="sucursal__body">
-            <h3>Bragado</h3>
-            <p class="sucursal__addr">Alsina 355</p>
-            <p class="sucursal__tel"><a href="tel:+542342427610">2342 427610</a></p>
-            <div class="sucursal__actions">
-              <a class="btn btn--dark btn--sm" href="../">Ver sucursal</a>
-              <a class="btn btn--outline btn--sm" href="https://wa.me/5492342427610?text=Hola%20Olivo%20Bragado%2C%20quiero%20consultar%20por%20una%20reserva" target="_blank" rel="noopener">Reservar</a>
-            </div>
-          </div>
-        </article>
+      <a class="hub-city hub-city--chivilcoy reveal reveal--lift" data-reveal href="../chivilcoy/">
+        <div class="hub-city__media">
+          <img src="../assets/img/sucursal-2.jpg" alt="" loading="lazy" />
+          <div class="hub-city__shade"></div>
+        </div>
+        <div class="hub-city__body">
+          <span class="hub-city__tag">Plaza principal</span>
+          <h2>Chivilcoy</h2>
+          <p>Hipólito Yrigoyen 1 · Frente a la plaza</p>
+          <span class="hub-city__cta">Entrar a la sucursal</span>
+        </div>
+      </a>
 
-        <article class="sucursal reveal reveal--lift" data-reveal>
-          <div class="sucursal__media">
-            <img src="../assets/img/sucursal-2.jpg" alt="Olivo Chivilcoy" loading="lazy" />
-          </div>
-          <div class="sucursal__body">
-            <h3>Chivilcoy</h3>
-            <p class="sucursal__addr">Hipólito Yrigoyen 1</p>
-            <p class="sucursal__tel"><a href="tel:+542346455790">2346 455790</a></p>
-            <div class="sucursal__actions">
-              <a class="btn btn--dark btn--sm" href="../">Ver sucursal</a>
-              <a class="btn btn--outline btn--sm" href="https://wa.me/5492346455790?text=Hola%20Olivo%20Chivilcoy%2C%20quiero%20consultar%20por%20una%20reserva" target="_blank" rel="noopener">Reservar</a>
-            </div>
-          </div>
-        </article>
-
-        <article class="sucursal reveal reveal--lift" data-reveal>
-          <div class="sucursal__media">
-            <img src="../assets/img/sucursal-3.jpg" alt="Olivo 9 de Julio" loading="lazy" />
-          </div>
-          <div class="sucursal__body">
-            <h3>9 de Julio</h3>
-            <p class="sucursal__addr">Av. Bartolomé Mitre 486</p>
-            <p class="sucursal__tel"><a href="tel:+542317456440">2317 456440</a></p>
-            <div class="sucursal__actions">
-              <a class="btn btn--dark btn--sm" href="../">Ver sucursal</a>
-              <a class="btn btn--outline btn--sm" href="https://wa.me/5492317456440?text=Hola%20Olivo%209%20de%20Julio%2C%20quiero%20consultar%20por%20una%20reserva" target="_blank" rel="noopener">Reservar</a>
-            </div>
-          </div>
-        </article>
-      </div>
+      <a class="hub-city hub-city--nueve reveal reveal--lift" data-reveal href="../nuevedejulio/">
+        <div class="hub-city__media">
+          <img src="../assets/img/sucursal-3.jpg" alt="" loading="lazy" />
+          <div class="hub-city__shade"></div>
+        </div>
+        <div class="hub-city__body">
+          <span class="hub-city__tag">Avenida Mitre</span>
+          <h2>9 de Julio</h2>
+          <p>Av. Bartolomé Mitre 486 · Noches largas</p>
+          <span class="hub-city__cta">Entrar a la sucursal</span>
+        </div>
+      </a>
     </section>
 
-    <section class="cartas reveal-scope" id="menu">
-      <div class="cartas__intro reveal reveal--soft" data-reveal>
-        <p class="eyebrow">Menú</p>
-        <h2>Nuestras cartas</h2>
-        <p>Dos propuestas según el momento del día. Abrí la carta y pasá las páginas como un libro.</p>
-      </div>
-
-      <div class="cartas__stage">
-        <a class="carta carta--cafe reveal reveal--lift" data-reveal href="../carta/?carta=cafeteria">
-          <div class="carta__glow" aria-hidden="true"></div>
-          <img class="carta__icon" src="../assets/icons/breakfast.png" alt="" width="140" height="140" />
-          <div class="carta__body">
-            <span class="carta__tag">Cafetería</span>
-            <h3>Desayuno &amp; merienda</h3>
-            <p>Café, panadería y opciones dulces o saladas.</p>
-            <p class="carta__hours">7 a 12 hs · 15 a 20 hs</p>
-            <span class="carta__cta">Hojear la carta</span>
-          </div>
-        </a>
-
-        <a class="carta carta--resto reveal reveal--lift" data-reveal href="../carta/?carta=restaurante">
-          <div class="carta__glow" aria-hidden="true"></div>
-          <img class="carta__icon carta__icon--round" src="../assets/icons/kitchen.png" alt="" width="140" height="140" />
-          <div class="carta__body">
-            <span class="carta__tag">Restaurante</span>
-            <h3>Almuerzo &amp; cena</h3>
-            <p>Entradas, principales y platos para compartir.</p>
-            <p class="carta__hours">12 a 15 hs · 20 a 24 hs</p>
-            <span class="carta__cta">Hojear la carta</span>
-          </div>
-        </a>
-      </div>
-    </section>
-
-    <section class="portal reveal-scope" id="tour" aria-labelledby="portal-title">
-      <div class="portal__rail">
-        <div class="portal__panel reveal reveal--soft" data-reveal>
-          <p class="eyebrow"><span class="eyebrow__new">Novedad</span> Tour 360°</p>
-          <h2 id="portal-title">Recorré nuestros locales<br />en primera persona</h2>
-          <p>
-            Entrá al salón, mirá alrededor y conocé cada espacio antes de visitarnos.
-            Dentro del recorrido también podés encontrar nuestro menú.
-          </p>
-          <a class="btn btn--dark" href="../vr/?autostart=1">Empezar el tour</a>
-        </div>
-
-        <a class="portal__screen reveal reveal--lift" data-reveal href="../vr/?autostart=1" aria-label="Recorrer el local en 360">
-          <img src="../assets/img/exp-salon.jpg" alt="" />
-          <div class="portal__overlay">
-            <span class="portal__badge">360°</span>
-            <span class="portal__play">Entrar</span>
-          </div>
-        </a>
-      </div>
-    </section>
-
-    <section class="contact reveal-scope" id="reserva">
-      <div class="contact__inner reveal reveal--lift" data-reveal>
-        <p class="contact__brand">olivo</p>
-        <h2>Te esperamos en tu ciudad</h2>
-        <div class="contact__multi">
-          <div>
-            <h3>Bragado</h3>
-            <p>Alsina 355</p>
-            <p><a href="tel:+542342427610">2342 427610</a></p>
-          </div>
-          <div>
-            <h3>Chivilcoy</h3>
-            <p>Hipólito Yrigoyen 1</p>
-            <p><a href="tel:+542346455790">2346 455790</a></p>
-          </div>
-          <div>
-            <h3>9 de Julio</h3>
-            <p>Av. Bartolomé Mitre 486</p>
-            <p><a href="tel:+542317456440">2317 456440</a></p>
-          </div>
-        </div>
-        <div class="contact__actions">
-          <a class="btn btn--primary" href="#sucursales">Elegir sucursal y reservar</a>
-          <a class="btn btn--ghost" href="https://www.instagram.com/olivo_cafe_resto" target="_blank" rel="noopener">Instagram</a>
-        </div>
+    <section class="hub-note reveal-scope">
+      <div class="hub-note__inner reveal reveal--soft" data-reveal>
+        <p class="eyebrow">La idea</p>
+        <h2>Cada local, su propia atmósfera</h2>
+        <p>
+          El hub te lleva a la landing de cada sucursal: reserva, menú tipo libro y tour 360°,
+          con identidad visual propia para cada ciudad.
+        </p>
       </div>
     </section>
   </main>
@@ -213,12 +102,12 @@
   <footer class="site-footer">
     <p><span class="site-footer__brand">olivo</span> Café + Resto</p>
     <p>Bragado · Chivilcoy · 9 de Julio</p>
-    <p><a class="site-footer__link" href="../">Ver versión Chivilcoy</a></p>
     <a class="site-footer__credit" href="https://www.nuvola.services" target="_blank" rel="noopener noreferrer">
       DESARROLLADO POR NUVOLA SERVICES
     </a>
   </footer>
 
   <script src="../assets/js/main.js" defer></script>
+  <script src="./hub.js" defer></script>
 </body>
 </html>

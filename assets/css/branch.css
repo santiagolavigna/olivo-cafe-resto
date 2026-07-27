@@ -1,0 +1,85 @@
+/* Per-branch visual accents */
+.theme-bragado {
+  --olive-leaf: #a8894a;
+  --gold: #e2c57a;
+  --glow: rgba(226, 197, 122, 0.4);
+}
+
+.theme-bragado .hero__media img {
+  object-position: center 45%;
+  filter: saturate(1.08) contrast(1.06) sepia(0.12);
+}
+
+.theme-bragado .cartas {
+  background:
+    radial-gradient(ellipse at 20% 0%, rgba(168, 137, 74, 0.28), transparent 48%),
+    linear-gradient(180deg, #241c14, #14100c);
+}
+
+.theme-bragado .portal {
+  background: #f0e6d2;
+}
+
+.theme-nuevedejulio {
+  --olive-leaf: #6f8fa8;
+  --gold: #c9d4e0;
+  --glow: rgba(201, 212, 224, 0.35);
+}
+
+.theme-nuevedejulio .hero__media img {
+  object-position: center 30%;
+  filter: saturate(0.95) contrast(1.1) brightness(0.92);
+}
+
+.theme-nuevedejulio .cartas {
+  background:
+    radial-gradient(ellipse at 80% 0%, rgba(111, 143, 168, 0.28), transparent 50%),
+    linear-gradient(180deg, #151a20, #0c1014);
+}
+
+.theme-nuevedejulio .portal {
+  background: #d9e0e6;
+}
+
+.theme-nuevedejulio .btn--primary {
+  background: #e8eef3;
+  color: #101820;
+}
+
+.branch-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin-bottom: 0.75rem;
+  padding: 0.4rem 0.85rem;
+  border-radius: 999px;
+  background: rgba(242, 240, 212, 0.1);
+  border: 1px solid rgba(242, 240, 212, 0.22);
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--gold);
+}
+
+.branch-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+  margin-top: 1rem;
+}
+
+.branch-bar a {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgba(242, 240, 212, 0.55);
+  border-bottom: 1px solid transparent;
+}
+
+.branch-bar a:hover,
+.branch-bar a.is-current {
+  color: var(--gold);
+  border-bottom-color: rgba(212, 201, 122, 0.45);
+}

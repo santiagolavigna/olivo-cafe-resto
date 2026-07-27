@@ -1,0 +1,274 @@
+.hub-page {
+  background: #0d110c;
+}
+
+.hub-nav {
+  gap: 1rem;
+}
+
+.hub-hero {
+  position: relative;
+  min-height: 100svh;
+  display: grid;
+  place-items: end start;
+  color: var(--sand);
+  overflow: hidden;
+}
+
+.hub-hero__bg {
+  position: absolute;
+  inset: 0;
+}
+
+.hub-hero__bg img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 35%;
+  transform: scale(1.08);
+  filter: saturate(1.05) contrast(1.05);
+  animation: hubKen 18s ease-in-out infinite alternate;
+}
+
+.hub-hero__veil {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(180deg, rgba(13, 17, 12, 0.2) 0%, rgba(13, 17, 12, 0.35) 40%, rgba(13, 17, 12, 0.92) 100%),
+    linear-gradient(90deg, rgba(13, 17, 12, 0.7) 0%, transparent 55%);
+}
+
+.hub-hero__glow {
+  position: absolute;
+  width: 42vw;
+  height: 42vw;
+  right: -8%;
+  top: 10%;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(212, 201, 122, 0.22), transparent 70%);
+  filter: blur(20px);
+  pointer-events: none;
+  animation: hubPulse 6s ease-in-out infinite alternate;
+}
+
+.hub-hero__content {
+  position: relative;
+  z-index: 2;
+  padding: clamp(5rem, 12vh, 8rem) clamp(1.25rem, 5vw, 4rem) 4.5rem;
+  max-width: 44rem;
+}
+
+.hub-hero__eyebrow {
+  margin: 0 0 0.4rem;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--gold);
+}
+
+.hub-hero__brand {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(5.4rem, 18vw, 10rem);
+  font-weight: 500;
+  line-height: 0.86;
+  letter-spacing: -0.04em;
+  color: #fff8e8;
+  text-shadow: 0 2px 28px rgba(0, 0, 0, 0.5), 0 0 50px var(--glow);
+}
+
+.hub-hero__line {
+  margin: 1.1rem 0 1.6rem;
+  max-width: 28rem;
+  font-size: clamp(1.05rem, 2.2vw, 1.28rem);
+  color: rgba(247, 245, 232, 0.88);
+  font-weight: 500;
+}
+
+.hub-hero__hint {
+  position: absolute;
+  bottom: 1.2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.65rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(242, 240, 212, 0.5);
+  z-index: 2;
+}
+
+.hub-hero__hint i {
+  width: 1px;
+  height: 34px;
+  background: linear-gradient(180deg, rgba(242, 240, 212, 0.7), transparent);
+  animation: drip 1.8s var(--ease) infinite;
+}
+
+.hub-cities {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.85rem;
+  padding: 1rem clamp(1rem, 3vw, 2rem) 2rem;
+  perspective: 1400px;
+}
+
+.hub-city {
+  position: relative;
+  display: block;
+  min-height: clamp(420px, 68vh, 620px);
+  border-radius: 28px;
+  overflow: hidden;
+  color: var(--sand);
+  isolation: isolate;
+  transform-style: preserve-3d;
+  transition: transform 0.55s var(--ease), box-shadow 0.55s var(--ease);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.28);
+}
+
+.hub-city:hover {
+  transform: translateY(-10px) scale(1.01);
+  box-shadow: 0 34px 70px rgba(0, 0, 0, 0.42);
+}
+
+.hub-city__media,
+.hub-city__media img,
+.hub-city__shade {
+  position: absolute;
+  inset: 0;
+}
+
+.hub-city__media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: scale(1.08);
+  transition: transform 0.9s var(--ease);
+}
+
+.hub-city:hover .hub-city__media img {
+  transform: scale(1.16);
+}
+
+.hub-city__shade {
+  background:
+    linear-gradient(180deg, rgba(12, 16, 10, 0.1) 0%, rgba(12, 16, 10, 0.25) 35%, rgba(12, 16, 10, 0.88) 100%);
+}
+
+.hub-city--bragado .hub-city__shade {
+  background:
+    linear-gradient(180deg, rgba(40, 28, 12, 0.15) 0%, rgba(20, 14, 8, 0.3) 40%, rgba(18, 12, 6, 0.9) 100%);
+}
+
+.hub-city--nueve .hub-city__shade {
+  background:
+    linear-gradient(180deg, rgba(10, 18, 28, 0.2) 0%, rgba(10, 14, 22, 0.35) 40%, rgba(8, 12, 18, 0.92) 100%);
+}
+
+.hub-city__body {
+  position: absolute;
+  inset: auto 0 0;
+  z-index: 2;
+  padding: 1.5rem 1.4rem 1.6rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.hub-city__tag {
+  display: inline-flex;
+  align-self: flex-start;
+  margin-bottom: 0.35rem;
+  padding: 0.35rem 0.7rem;
+  border-radius: 999px;
+  background: rgba(242, 240, 212, 0.12);
+  border: 1px solid rgba(242, 240, 212, 0.22);
+  font-size: 0.62rem;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--gold);
+  backdrop-filter: blur(8px);
+}
+
+.hub-city h2 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(2.6rem, 5vw, 3.6rem);
+  font-weight: 600;
+  line-height: 0.95;
+  letter-spacing: -0.02em;
+  color: var(--sand);
+}
+
+.hub-city p {
+  margin: 0.2rem 0 1rem;
+  color: rgba(242, 240, 212, 0.78);
+  font-weight: 500;
+}
+
+.hub-city__cta {
+  display: inline-flex;
+  align-self: flex-start;
+  font-size: 0.82rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  padding-bottom: 2px;
+  border-bottom: 1px solid rgba(242, 240, 212, 0.45);
+  transition: color 0.25s, border-color 0.25s, transform 0.25s var(--ease);
+}
+
+.hub-city:hover .hub-city__cta {
+  color: var(--gold);
+  border-bottom-color: var(--gold);
+  transform: translateX(4px);
+}
+
+.hub-note {
+  padding: clamp(3.5rem, 8vw, 5.5rem) clamp(1.25rem, 5vw, 4rem);
+  background:
+    radial-gradient(ellipse at 50% 0%, rgba(122, 143, 85, 0.2), transparent 55%),
+    #10150d;
+  color: var(--sand);
+  text-align: center;
+}
+
+.hub-note__inner {
+  max-width: 38rem;
+  margin: 0 auto;
+}
+
+.hub-note .eyebrow { color: var(--olive-leaf); }
+.hub-note h2 { color: var(--sand); }
+.hub-note p {
+  margin: 0;
+  color: rgba(242, 240, 212, 0.72);
+  font-size: 1.05rem;
+}
+
+@keyframes hubKen {
+  from { transform: scale(1.05) translate3d(0, 0, 0); }
+  to { transform: scale(1.14) translate3d(0, -2%, 0); }
+}
+
+@keyframes hubPulse {
+  from { opacity: 0.55; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1.08); }
+}
+
+@media (max-width: 960px) {
+  .hub-cities { grid-template-columns: 1fr; }
+  .hub-city { min-height: 360px; }
+  .hub-nav { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hub-hero__bg img,
+  .hub-hero__glow {
+    animation: none !important;
+  }
+}
