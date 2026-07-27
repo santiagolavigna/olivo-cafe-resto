@@ -118,6 +118,33 @@
     });
   });
 
+  /* Mobile: avoid accidental taps while swiping the menu carousel */
+  var cartaStage = document.querySelector('.cartas__stage');
+  if (cartaStage) {
+    var swipeX = 0;
+    var swipeY = 0;
+    var swipeMoved = false;
+    cartaStage.addEventListener('touchstart', function (e) {
+      if (!e.touches.length) return;
+      swipeMoved = false;
+      swipeX = e.touches[0].clientX;
+      swipeY = e.touches[0].clientY;
+    }, { passive: true });
+    cartaStage.addEventListener('touchmove', function (e) {
+      if (!e.touches.length) return;
+      if (Math.abs(e.touches[0].clientX - swipeX) > 12 || Math.abs(e.touches[0].clientY - swipeY) > 12) {
+        swipeMoved = true;
+      }
+    }, { passive: true });
+    cartaStage.addEventListener('click', function (e) {
+      if (swipeMoved) {
+        e.preventDefault();
+        e.stopPropagation();
+        swipeMoved = false;
+      }
+    }, true);
+  }
+
   var ticking = false;
   var heroRoot = document.querySelector('[data-parallax-root]');
   var heroLayers = heroRoot ? heroRoot.querySelectorAll('[data-depth]') : [];

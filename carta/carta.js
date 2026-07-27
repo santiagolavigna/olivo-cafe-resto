@@ -298,6 +298,10 @@
     touchTracking = false;
     var dx = e.changedTouches[0].clientX - touchStartX;
     var dy = e.changedTouches[0].clientY - touchStartY;
+    if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.15) {
+      flip(dx < 0 ? 1 : -1);
+      return;
+    }
     if (Math.abs(dy) > 60 && Math.abs(dy) > Math.abs(dx) * 1.5) {
       flip(dy < 0 ? 1 : -1);
     }

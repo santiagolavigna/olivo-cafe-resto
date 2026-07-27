@@ -333,6 +333,17 @@ h2 {
 .cartas__intro .eyebrow, .cartas__intro h2 { color: var(--sand); }
 .cartas__intro p { color: rgba(242,240,212,.72); max-width: 34rem; }
 
+.cartas__hint {
+  display: none;
+  margin: 0.85rem 0 0;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: rgba(242, 240, 212, 0.45);
+  text-align: center;
+}
+
 .cartas__stage {
   display: grid; grid-template-columns: 1fr 1fr; gap: 1.15rem; perspective: 1400px;
 }
@@ -639,15 +650,8 @@ h2 {
   font-family: var(--font-display); font-size: 1.15rem; color: var(--sand);
 }
 .site-footer__link {
-  display: inline-block;
-  margin-top: 0.55rem;
-  font-size: 0.78rem;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  color: rgba(242, 240, 212, 0.55);
-  border-bottom: 1px solid rgba(242, 240, 212, 0.22);
+  display: none;
 }
-.site-footer__link:hover { color: var(--gold); border-bottom-color: var(--gold); }
 
 .site-footer__credit {
   display: inline-block;
@@ -692,10 +696,46 @@ h2 {
 
 @media (max-width: 960px) {
   .story__sticky,
-  .cartas__stage,
   .portal__rail,
   .horarios__inner {
     grid-template-columns: 1fr;
+  }
+
+  .cartas {
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+  .cartas__intro {
+    padding-inline: clamp(1.25rem, 5vw, 4rem);
+  }
+
+  .cartas__hint {
+    display: block;
+    padding-inline: 1.25rem;
+  }
+
+  .cartas__stage {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(82%, 340px);
+    grid-template-columns: none;
+    gap: 0.85rem;
+    overflow-x: auto;
+    overflow-y: visible;
+    scroll-snap-type: x mandatory;
+    scroll-padding-inline: 1.25rem;
+    padding: 0.35rem 1.25rem 1rem;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    perspective: none;
+  }
+
+  .cartas__stage::-webkit-scrollbar { display: none; }
+
+  .cartas__stage .carta {
+    scroll-snap-align: center;
+    min-height: 200px;
   }
 
   .horarios__grid {

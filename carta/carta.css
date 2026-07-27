@@ -217,4 +217,12 @@ button { font-family: inherit; }
   .carta-back span, .carta-pdf span { display: none; }
   .carta-back, .carta-pdf { padding: 0.55rem; }
   .carta-brand__word { font-size: 1.65rem; }
+  .carta-arrow {
+    opacity: 0.55;
+    width: 40px;
+    height: 40px;
+  }
+  .carta-hint {
+    letter-spacing: 0.1em;
+  }
 }
