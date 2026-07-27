@@ -161,10 +161,23 @@ button { font-family: inherit; }
   max-width: 22rem;
   text-align: center;
   color: rgba(242, 240, 212, 0.8);
+  line-height: 1.7;
 }
 .carta-error a {
   color: var(--gold);
   border-bottom: 1px solid rgba(212, 201, 122, 0.5);
+}
+.carta-retry {
+  display: inline-block;
+  margin: 0 0.15rem;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--gold);
+  font: inherit;
+  font-weight: 700;
+  border-bottom: 1px solid rgba(212, 201, 122, 0.5);
+  cursor: pointer;
 }
 
 /* Controls */

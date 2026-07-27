@@ -9,6 +9,8 @@
   <link rel="icon" type="image/svg+xml" href="../assets/img/logo.svg" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin />
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="./carta.css" />
 </head>
@@ -43,6 +45,8 @@
     </div>
     <p class="carta-error" id="bookError" hidden>
       No pudimos cargar la carta acá.
+      <button type="button" class="carta-retry" id="retryBtn">Reintentar</button>
+      ·
       <a id="errorPdfLink" href="../assets/menu-cafeteria.pdf" target="_blank" rel="noopener">Abrila en PDF</a>.
     </p>
   </main>
@@ -60,8 +64,49 @@
     </button>
   </footer>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/page-flip@2.0.7/dist/js/page-flip.browser.js"></script>
-  <script src="./carta.js" defer></script>
+  <script>
+    (function () {
+      function loadScript(src, fallback) {
+        return new Promise(function (resolve, reject) {
+          var s = document.createElement('script');
+          s.src = src;
+          s.async = false;
+          s.onload = function () { resolve(); };
+          s.onerror = function () {
+            if (!fallback) { reject(new Error(src)); return; }
+            var s2 = document.createElement('script');
+            s2.src = fallback;
+            s2.async = false;
+            s2.onload = function () { resolve(); };
+            s2.onerror = function () { reject(new Error(fallback)); };
+            document.head.appendChild(s2);
+          };
+          document.head.appendChild(s);
+        });
+      }
+
+      loadScript(
+        'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js',
+        'https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js'
+      )
+        .then(function () {
+          return loadScript(
+            'https://cdn.jsdelivr.net/npm/page-flip@2.0.7/dist/js/page-flip.browser.js',
+            'https://unpkg.com/page-flip@2.0.7/dist/js/page-flip.browser.js'
+          );
+        })
+        .then(function () {
+          var app = document.createElement('script');
+          app.src = './carta.js';
+          document.body.appendChild(app);
+        })
+        .catch(function () {
+          var err = document.getElementById('bookError');
+          var loader = document.getElementById('loader');
+          if (loader) loader.hidden = true;
+          if (err) err.hidden = false;
+        });
+    })();
+  </script>
 </body>
 </html>
