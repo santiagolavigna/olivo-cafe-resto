@@ -2,12 +2,263 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <meta http-equiv="refresh" content="0; url=../" />
-  <link rel="canonical" href="../" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Olivo Café Resto · Chivilcoy</title>
-  <script>location.replace('../');</script>
+  <meta name="description" content="Olivo Café Resto en Chivilcoy. Hipólito Yrigoyen 1. Reservá tu mesa y conocé el local." />
+  <meta name="theme-color" content="#141a12" />
+  <link rel="icon" type="image/svg+xml" href="../assets/img/logo.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../assets/css/styles.css" />
+  <link rel="stylesheet" href="../assets/css/branch.css" />
 </head>
-<body>
-  <p style="font-family: system-ui; padding: 2rem;"><a href="../">Ir a Olivo Chivilcoy</a></p>
+<body class="theme-chivilcoy">
+  <div class="progress" id="scrollProgress" aria-hidden="true"><span></span></div>
+
+  <header class="site-header" id="siteHeader">
+    <a class="brand" href="#inicio" aria-label="Olivo inicio">
+      <span class="brand__word">olivo</span>
+      <span class="brand__sub">Chivilcoy</span>
+    </a>
+    <button class="nav-toggle" id="navToggle" type="button" aria-label="Abrir menú" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+    <nav class="site-nav" id="siteNav" aria-label="Principal">
+      <a href="#inicio">Inicio</a>
+      <a href="#experiencia">Experiencia</a>
+      <a href="#menu">Menú</a>
+      <a href="../vr/?autostart=1">Tour 360°</a>
+      <a class="nav-cta" href="#reserva">Reservar</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero" id="inicio">
+      <div class="hero__stage" data-parallax-root>
+        <div class="hero__media" data-depth="0.1">
+          <img src="../assets/img/exp-salon.jpg" alt="Salón de Olivo Café Resto en Chivilcoy" width="1536" height="1024" />
+        </div>
+        <div class="hero__veil"></div>
+        <div class="hero__orb hero__orb--1" data-depth="0.28" aria-hidden="true"></div>
+      </div>
+
+      <div class="hero__content">
+        <p class="branch-chip reveal" data-reveal>Plaza principal</p>
+        <p class="hero__branch reveal" data-reveal>Chivilcoy</p>
+        <h1 class="hero__brand reveal" data-reveal>olivo</h1>
+        <p class="hero__tagline reveal" data-reveal>
+          Frente a la plaza: el Olivo para encontrarse. Café de día, mesa larga de noche.
+        </p>
+        <div class="hero__actions reveal" data-reveal>
+          <a class="btn btn--primary" href="#reserva">Reservar mesa</a>
+          <a class="btn btn--primary" href="#menu">Menú</a>
+          <a class="btn btn--ghost" href="../vr/?autostart=1">olivo 360°</a>
+        </div>
+        <dl class="hero__meta reveal" data-reveal>
+          <div>
+            <dt>Dirección</dt>
+            <dd>Hipólito Yrigoyen 1</dd>
+          </div>
+          <div>
+            <dt>Teléfono</dt>
+            <dd><a href="tel:+542346455790">2346 455790</a></dd>
+          </div>
+        </dl>
+        <div class="branch-bar reveal" data-reveal>
+          <a href="../bragado/">Bragado</a>
+          <a class="is-current" href="./">Chivilcoy</a>
+          <a href="../nuevedejulio/">9 de Julio</a>
+          <a href="../">Todas</a>
+        </div>
+      </div>
+
+      <div class="hero__hint" aria-hidden="true"><span>Deslizá</span><i></i></div>
+    </section>
+
+    <section class="story" id="experiencia" aria-label="La experiencia Olivo">
+      <div class="story__sticky">
+        <div class="story__visual">
+          <img src="../assets/img/exp-salon.jpg" alt="" class="story__img is-active" data-story-img data-slot="0" />
+          <img src="../assets/img/exp-morning.jpg" alt="" class="story__img" data-story-img data-slot="1" />
+          <img src="../assets/img/exp-dinner.jpg" alt="" class="story__img" data-story-img data-slot="2" />
+          <div class="story__shade"></div>
+        </div>
+        <div class="story__copy">
+          <p class="eyebrow">Experiencia</p>
+          <p class="story__index" data-story-index>01 / 03</p>
+          <h2 data-story-title>El salón, como en casa</h2>
+          <p data-story-text>Mesas amplias, luz tibia y un ambiente pensado para charlar sin apuro.</p>
+        </div>
+      </div>
+
+      <div class="story__panels">
+        <article class="story__panel" data-story-panel
+          data-title="El salón, como en casa"
+          data-text="Mesas amplias, luz tibia y un ambiente pensado para charlar sin apuro."
+          data-index="01 / 03"
+          data-img="0">
+          <img src="../assets/img/exp-salon.jpg" alt="Salón Olivo" loading="lazy" />
+          <div>
+            <h3>El salón, como en casa</h3>
+            <p>Mesas amplias, luz tibia y un ambiente pensado para charlar sin apuro.</p>
+          </div>
+        </article>
+        <article class="story__panel" data-story-panel
+          data-title="Mañanas con aroma a café"
+          data-text="Empezá el día con un espresso, medialunas y el ruido suave de la barra."
+          data-index="02 / 03"
+          data-img="1">
+          <img src="../assets/img/exp-morning.jpg" alt="Barra de café Olivo" loading="lazy" />
+          <div>
+            <h3>Mañanas con aroma a café</h3>
+            <p>Empezá el día con un espresso, medialunas y el ruido suave de la barra.</p>
+          </div>
+        </article>
+        <article class="story__panel" data-story-panel
+          data-title="Noches para quedarse"
+          data-text="Cuando baja el sol, la mesa se pone más larga: platos, vino y buena compañía."
+          data-index="03 / 03"
+          data-img="2">
+          <img src="../assets/img/exp-dinner.jpg" alt="Mesa de noche en Olivo" loading="lazy" />
+          <div>
+            <h3>Noches para quedarse</h3>
+            <p>Cuando baja el sol, la mesa se pone más larga: platos, vino y buena compañía.</p>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="essence reveal-scope" aria-label="Esencia Chivilcoy">
+      <div class="essence__grid">
+        <div class="essence__lead reveal reveal--soft" data-reveal>
+          <p class="eyebrow">Esencia</p>
+          <h2>El Olivo de la plaza</h2>
+          <p>Chivilcoy es encuentro: gente que se cruza, mesas que se juntan y un ritmo que no apura.</p>
+          <p class="essence__quote">“Acá venís a quedarte un rato más.”</p>
+        </div>
+        <div class="essence__pills">
+          <div class="essence__item reveal reveal--lift" data-reveal>
+            <strong>Plaza</strong>
+            <p>Yrigoyen 1, con la ciudad pasando enfrente.</p>
+          </div>
+          <div class="essence__item reveal reveal--lift" data-reveal>
+            <strong>Encuentro</strong>
+            <p>Desayunos, almuerzos y sobremesas sin reloj.</p>
+          </div>
+          <div class="essence__item reveal reveal--lift" data-reveal>
+            <strong>Equilibrio</strong>
+            <p>Café de día + resto de noche, en el mismo local.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="cartas reveal-scope" id="menu">
+      <div class="cartas__intro reveal reveal--soft" data-reveal>
+        <p class="eyebrow">Menú</p>
+        <h2>Nuestras cartas</h2>
+        <p>Dos propuestas según el momento del día. Abrí la carta y pasá las páginas como un libro.</p>
+      </div>
+      <p class="cartas__hint" aria-hidden="true">Deslizá para ver más →</p>
+      <div class="cartas__stage">
+        <a class="carta carta--cafe reveal reveal--lift" data-reveal href="../carta/?carta=cafeteria">
+          <div class="carta__glow" aria-hidden="true"></div>
+          <img class="carta__icon" src="../assets/icons/breakfast.png" alt="" width="140" height="140" />
+          <div class="carta__body">
+            <span class="carta__tag">Cafetería</span>
+            <h3>Desayuno &amp; merienda</h3>
+            <p>Café, panadería y opciones dulces o saladas.</p>
+            <p class="carta__hours">7 a 12 hs · 15 a 20 hs</p>
+            <span class="carta__cta">Hojear la carta</span>
+          </div>
+        </a>
+
+        <a class="carta carta--resto reveal reveal--lift" data-reveal href="../carta/?carta=restaurante">
+          <div class="carta__glow" aria-hidden="true"></div>
+          <img class="carta__icon carta__icon--round" src="../assets/icons/kitchen.png" alt="" width="140" height="140" />
+          <div class="carta__body">
+            <span class="carta__tag">Restaurante</span>
+            <h3>Almuerzo &amp; cena</h3>
+            <p>Entradas, principales y platos para compartir.</p>
+            <p class="carta__hours">12 a 15 hs · 20 a 24 hs</p>
+            <span class="carta__cta">Hojear la carta</span>
+          </div>
+        </a>
+      </div>
+    </section>
+
+    <section class="gallery reveal reveal-scope" data-reveal aria-label="Ambientes Olivo">
+      <div class="gallery__rail">
+        <figure data-reveal-child><img src="../assets/img/exp-salon.jpg" alt="Salón Olivo" loading="lazy" /></figure>
+        <figure data-reveal-child><img src="../assets/img/exp-morning.jpg" alt="Barra de café" loading="lazy" /></figure>
+        <figure data-reveal-child><img src="../assets/img/exp-dinner.jpg" alt="Mesa de noche" loading="lazy" /></figure>
+        <figure data-reveal-child><img src="../assets/img/interior.jpg" alt="Mesa central" loading="lazy" /></figure>
+      </div>
+    </section>
+
+    <section class="portal reveal-scope" id="tour" aria-labelledby="portal-title">
+      <div class="portal__rail">
+        <div class="portal__panel reveal reveal--soft" data-reveal>
+          <p class="eyebrow"><span class="eyebrow__new">Novedad</span> Tour 360°</p>
+          <h2 id="portal-title">Recorré nuestro local<br />en primera persona</h2>
+          <p>
+            Entrá al salón, mirá alrededor y conocé el espacio antes de visitarlos.
+            Dentro del recorrido también podés encontrar nuestro menú.
+          </p>
+          <a class="btn btn--dark" href="../vr/?autostart=1">Empezar el tour</a>
+        </div>
+
+        <a class="portal__screen reveal reveal--lift" data-reveal href="../vr/?autostart=1" aria-label="Recorrer el local en 360">
+          <img src="../assets/img/exp-salon.jpg" alt="" />
+          <div class="portal__overlay">
+            <span class="portal__badge">360°</span>
+            <span class="portal__play">Entrar</span>
+          </div>
+        </a>
+      </div>
+    </section>
+
+    <section class="contact reveal-scope" id="reserva">
+      <div class="contact__inner reveal reveal--lift" data-reveal>
+        <p class="contact__brand">olivo</p>
+        <h2>Te esperamos en Chivilcoy</h2>
+        <p class="contact__addr">
+          Hipólito Yrigoyen 1<br />
+          Tel. <a href="tel:+542346455790">2346 455790</a><br />
+          <a href="mailto:hola@olivocaferesto.com.ar">hola@olivocaferesto.com.ar</a>
+        </p>
+        <div class="contact__hours">
+          <p class="contact__hours-title">Horarios de atención</p>
+          <p><strong>Cafetería</strong> — Desayuno 7 a 12 hs · Merienda 15 a 20 hs</p>
+          <p><strong>Restaurante</strong> — Almuerzo 12 a 15 hs · Cena 20 a 24 hs</p>
+        </div>
+        <div class="contact__actions">
+          <a class="btn btn--primary" href="https://wa.me/5492346455790?text=Hola%20Olivo%2C%20quiero%20consultar%20por%20una%20reserva" target="_blank" rel="noopener">Reservar por WhatsApp</a>
+          <a class="btn btn--ghost" href="https://www.instagram.com/olivo_cafe_resto" target="_blank" rel="noopener">Instagram</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <section class="hub-jump">
+    <a class="hub-jump__btn" href="../">
+      <span>Bragado · Chivilcoy · 9 de Julio</span>
+      <strong>Ver todas las sucursales</strong>
+    </a>
+  </section>
+
+  <footer class="site-footer">
+    <p><span class="site-footer__brand">olivo</span> · Chivilcoy</p>
+    <a class="site-footer__credit" href="https://www.nuvola.services" target="_blank" rel="noopener noreferrer">
+      DESARROLLADO POR NUVOLA SERVICES
+    </a>
+  </footer>
+
+  <a class="wa-float" href="https://wa.me/5492346455790?text=Hola%20Olivo%2C%20quiero%20consultar%20por%20una%20reserva" target="_blank" rel="noopener" aria-label="WhatsApp">
+    <svg viewBox="0 0 32 32" aria-hidden="true"><path fill="currentColor" d="M16.1 3C9.5 3 4.1 8.3 4.1 14.9c0 2.1.6 4.1 1.6 5.9L4 28l7.4-1.9c1.7.9 3.6 1.4 5.6 1.4 6.6 0 11.9-5.3 11.9-11.9S22.7 3 16.1 3zm0 21.7c-1.8 0-3.5-.5-5-1.3l-.4-.2-4.4 1.1 1.2-4.3-.2-.4c-1-1.6-1.5-3.4-1.5-5.3 0-5.5 4.5-9.9 10-9.9s10 4.4 10 9.9-4.4 10.4-9.7 10.4zm5.5-7.4c-.3-.1-1.8-.9-2.1-1-.3-.1-.5-.2-.7.1-.2.3-.8 1-.9 1.2-.2.2-.3.2-.6.1-.3-.1-1.3-.5-2.4-1.5-.9-.8-1.5-1.8-1.7-2.1-.2-.3 0-.5.1-.6.1-.1.3-.3.4-.5.1-.2.2-.3.3-.5.1-.2 0-.4 0-.5 0-.1-.7-1.7-1-2.3-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.4s1 2.8 1.2 3c.1.2 2 3.1 4.9 4.3.7.3 1.2.5 1.6.6.7.2 1.3.2 1.8.1.5-.1 1.8-.7 2-1.4.2-.7.2-1.3.2-1.4 0-.2-.2-.3-.5-.4z"/></svg>
+  </a>
+
+  <script src="../assets/js/main.js" defer></script>
 </body>
 </html>

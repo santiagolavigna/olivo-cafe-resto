@@ -1,11 +1,11 @@
 # Olivo Café Resto
 
-Demo cliente: hub multisucursal + landings por ciudad + carta tipo libro + tour 360°.
+Demo cliente: hub en la raíz + landings por ciudad + carta tipo libro + tour 360°.
 
 ## URLs en vivo
 
-- **Hub:** https://santiagolavigna.github.io/olivo-cafe-resto/multisucursal/
-- **Chivilcoy:** https://santiagolavigna.github.io/olivo-cafe-resto/
+- **Hub (raíz):** https://santiagolavigna.github.io/olivo-cafe-resto/
+- **Chivilcoy:** https://santiagolavigna.github.io/olivo-cafe-resto/chivilcoy/
 - **Bragado:** https://santiagolavigna.github.io/olivo-cafe-resto/bragado/
 - **9 de Julio:** https://santiagolavigna.github.io/olivo-cafe-resto/nuevedejulio/
 - **Carta (libro):** https://santiagolavigna.github.io/olivo-cafe-resto/carta/
@@ -14,11 +14,11 @@ Demo cliente: hub multisucursal + landings por ciudad + carta tipo libro + tour 
 ## Estructura
 
 ```
-/                 → landing Chivilcoy
-/multisucursal/   → hub para elegir sucursal
-/bragado/         → landing Bragado (tema cálido)
-/chivilcoy/       → redirect a /
-/nuevedejulio/    → landing 9 de Julio (tema nocturno)
+/                 → hub (elegí tu sucursal)
+/chivilcoy/       → landing Chivilcoy
+/bragado/         → landing Bragado
+/nuevedejulio/    → landing 9 de Julio
 /carta/           → menú interactivo tipo libro
 /vr/              → tour 360°
+/multisucursal/   → redirect a /
 ```
