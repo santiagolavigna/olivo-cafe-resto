@@ -4,14 +4,14 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <title>Nuestra carta · Olivo Café Resto</title>
-  <meta name="description" content="La carta de Olivo Café Resto. Deslizá para hojear." />
+  <meta name="description" content="La carta de Olivo Café Resto. Hojéala como un libro." />
   <meta name="theme-color" content="#0a0d08" />
-  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="mobile-web-app-capable" content="yes" />
   <link rel="icon" type="image/svg+xml" href="../assets/img/logo.svg" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@600;700;800&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="./carta.css?v=20260728e" />
+  <link rel="stylesheet" href="./carta.css?v=20260728f" />
 </head>
 <body>
   <header class="top">
@@ -29,6 +29,9 @@
 
   <main class="viewer" id="viewer" aria-label="Carta Olivo">
     <div class="rail" id="rail"></div>
+    <div class="book-wrap" id="bookWrap" hidden>
+      <div id="book"></div>
+    </div>
     <p class="viewer__error" id="bookError" hidden>
       No pudimos cargar la carta.
       <a id="errorPdf" href="../assets/menu-cafeteria.pdf" target="_blank" rel="noopener">Abrir PDF</a>
@@ -48,6 +51,6 @@
     </button>
   </footer>
 
-  <script src="./carta.js?v=20260728e" defer></script>
+  <script src="./carta.js?v=20260728f" defer></script>
 </body>
 </html>
