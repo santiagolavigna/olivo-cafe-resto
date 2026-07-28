@@ -1,3 +1,4 @@
+"""Pre-render menu PDFs to JPG pages for the carta viewer."""
 import json
 from pathlib import Path
 
@@ -9,42 +10,39 @@ MENUS = {
     "cafeteria": ROOT / "assets" / "menu-cafeteria.pdf",
     "restaurante": ROOT / "assets" / "menu-restaurante.pdf",
 }
-ZOOM = 2.4
+# Sharp enough for phone zoom / desktop retina
+ZOOM = 2.8
 
 
-def export_menu(key: str, pdf_path: Path) -> list[str]:
+def export_menu(key: str, pdf_path: Path) -> list[dict]:
     doc = fitz.open(pdf_path)
     dest = OUT / key
     dest.mkdir(parents=True, exist_ok=True)
     for old in dest.glob("*.jpg"):
         old.unlink()
 
-    files: list[str] = []
-    idx = 1
+    pages: list[dict] = []
     mat = fitz.Matrix(ZOOM, ZOOM)
 
-    for page in doc:
+    for i, page in enumerate(doc, start=1):
         rect = page.rect
         landscape = rect.width > rect.height * 1.05
-        clips = []
-        if landscape:
-            mid = rect.x0 + rect.width / 2
-            clips.append(fitz.Rect(rect.x0, rect.y0, mid, rect.y1))
-            clips.append(fitz.Rect(mid, rect.y0, rect.x1, rect.y1))
-        else:
-            clips.append(rect)
+        pix = page.get_pixmap(matrix=mat, alpha=False)
+        name = f"{i:02d}.jpg"
+        out = dest / name
+        pix.pil_save(out.as_posix(), format="JPEG", quality=88, optimize=True)
+        pages.append(
+            {
+                "src": f"./pages/{key}/{name}",
+                "w": pix.width,
+                "h": pix.height,
+                "orientation": "landscape" if landscape else "portrait",
+            }
+        )
+        print(" ", out.relative_to(ROOT), pix.width, "x", pix.height, pages[-1]["orientation"])
 
-        for clip in clips:
-            pix = page.get_pixmap(matrix=mat, clip=clip, alpha=False)
-            name = f"{idx:02d}.jpg"
-            out = dest / name
-            pix.pil_save(out.as_posix(), format="JPEG", quality=84, optimize=True)
-            files.append(f"./pages/{key}/{name}")
-            idx += 1
-            print(" ", out.relative_to(ROOT), pix.width, "x", pix.height)
-
-    print(f"{key}: {len(files)} slides from {doc.page_count} pdf pages")
-    return files
+    print(f"{key}: {len(pages)} pages from {doc.page_count} pdf pages")
+    return pages
 
 
 def main() -> None:
@@ -53,7 +51,10 @@ def main() -> None:
     for key, path in MENUS.items():
         print("rendering", key)
         manifest[key] = export_menu(key, path)
-    (OUT / "manifest.json").write_text(json.dumps(manifest, indent=2), encoding="utf-8")
+    (OUT / "manifest.json").write_text(
+        json.dumps(manifest, indent=2, ensure_ascii=False),
+        encoding="utf-8",
+    )
     print("wrote", OUT / "manifest.json")
 
 

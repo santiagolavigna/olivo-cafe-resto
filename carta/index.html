@@ -2,16 +2,16 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=5" />
   <title>Nuestra carta · Olivo Café Resto</title>
   <meta name="description" content="La carta de Olivo Café Resto. Deslizá para ver cafetería y restaurante." />
-  <meta name="theme-color" content="#141a12" />
+  <meta name="theme-color" content="#0a0d08" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <link rel="icon" type="image/svg+xml" href="../assets/img/logo.svg" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="./carta.css?v=20260727g" />
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="./carta.css?v=20260728a" />
 </head>
 <body>
   <header class="top">
@@ -29,6 +29,7 @@
 
   <main class="viewer" id="viewer" aria-label="Carta Olivo">
     <div class="rail" id="rail"></div>
+    <p class="viewer__hint" id="zoomHint">Deslizá hacia abajo</p>
   </main>
 
   <footer class="dock">
@@ -37,13 +38,13 @@
     </button>
     <div class="dock__meta">
       <span id="pageLabel">1 / 1</span>
-      <span class="dock__hint">Deslizá para pasar</span>
+      <span class="dock__hint" id="dockHint">Deslizá para pasar</span>
     </div>
     <button type="button" class="dock__arrow" id="nextBtn" aria-label="Siguiente">
       <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
     </button>
   </footer>
 
-  <script src="./carta.js?v=20260727g" defer></script>
+  <script src="./carta.js?v=20260728a" defer></script>
 </body>
 </html>

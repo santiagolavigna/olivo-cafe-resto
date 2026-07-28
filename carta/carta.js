@@ -11,10 +11,16 @@
   var prevBtn = document.getElementById('prevBtn');
   var nextBtn = document.getElementById('nextBtn');
   var pdfBtn = document.getElementById('pdfBtn');
+  var zoomHint = document.getElementById('zoomHint');
+  var dockHint = document.getElementById('dockHint');
   var tabs = Array.prototype.slice.call(document.querySelectorAll('.top__tab'));
   var pages = [];
   var currentKey = 'cafeteria';
   var manifest = null;
+
+  function isDesktop() {
+    return window.matchMedia('(min-width: 900px)').matches;
+  }
 
   function keyFromUrl() {
     var q = (new URLSearchParams(window.location.search).get('carta') || '').toLowerCase();
@@ -40,11 +46,34 @@
     setUrl(key);
   }
 
+  function normalizeEntries(list) {
+    if (!list || !list.length) return [];
+    return list.map(function (item) {
+      if (typeof item === 'string') {
+        return { src: item, orientation: 'portrait' };
+      }
+      return item;
+    });
+  }
+
   function currentIndex() {
     if (!pages.length) return 0;
-    var x = rail.scrollLeft;
-    var w = rail.clientWidth || 1;
-    return Math.max(0, Math.min(pages.length - 1, Math.round(x / w)));
+    if (isDesktop()) {
+      var x = rail.scrollLeft;
+      var w = rail.clientWidth || 1;
+      return Math.max(0, Math.min(pages.length - 1, Math.round(x / w)));
+    }
+    var mid = rail.scrollTop + rail.clientHeight * 0.35;
+    var best = 0;
+    var bestDist = Infinity;
+    pages.forEach(function (slide, i) {
+      var dist = Math.abs(slide.offsetTop - mid + slide.offsetHeight * 0.2);
+      if (dist < bestDist) {
+        bestDist = dist;
+        best = i;
+      }
+    });
+    return best;
   }
 
   function updateChrome() {
@@ -52,46 +81,69 @@
     pageLabel.textContent = (i + 1) + ' / ' + Math.max(pages.length, 1);
     prevBtn.disabled = i <= 0;
     nextBtn.disabled = i >= pages.length - 1;
+    if (dockHint) {
+      dockHint.textContent = isDesktop() ? 'Flechas o deslizá' : 'Deslizá hacia abajo';
+    }
   }
 
   function goTo(i, smooth) {
     if (!pages.length) return;
     i = Math.max(0, Math.min(pages.length - 1, i));
-    rail.scrollTo({ left: i * rail.clientWidth, behavior: smooth === false ? 'auto' : 'smooth' });
+    var behavior = smooth === false ? 'auto' : 'smooth';
+    if (isDesktop()) {
+      rail.scrollTo({ left: i * rail.clientWidth, top: 0, behavior: behavior });
+    } else {
+      rail.scrollTo({ top: pages[i].offsetTop, left: 0, behavior: behavior });
+    }
     window.setTimeout(updateChrome, smooth === false ? 0 : 280);
   }
 
-  function buildRail(urls) {
+  function buildRail(entries) {
     rail.innerHTML = '';
     pages = [];
-    urls.forEach(function (src, n) {
+
+    entries.forEach(function (entry, n) {
       var slide = document.createElement('article');
-      slide.className = 'page';
+      var orient = entry.orientation || 'portrait';
+      slide.className = 'page is-' + orient;
       slide.setAttribute('aria-label', 'Página ' + (n + 1));
+
       var img = document.createElement('img');
-      img.src = src;
+      img.src = entry.src + (entry.src.indexOf('?') >= 0 ? '&' : '?') + 'v=20260728a';
       img.alt = 'Carta Olivo · página ' + (n + 1);
       img.decoding = 'async';
       img.loading = n === 0 ? 'eager' : 'lazy';
       img.draggable = false;
+      if (entry.w && entry.h) {
+        img.width = entry.w;
+        img.height = entry.h;
+      }
+
       slide.appendChild(img);
       rail.appendChild(slide);
       pages.push(slide);
 
-      // preload next two
       if (n > 0 && n < 3) {
         var pre = new Image();
-        pre.src = src;
+        pre.src = img.src;
       }
     });
+
     goTo(0, false);
     updateChrome();
+
+    if (!isDesktop()) {
+      zoomHint.classList.add('is-visible');
+      window.setTimeout(function () { zoomHint.classList.remove('is-visible'); }, 2600);
+    } else {
+      zoomHint.classList.remove('is-visible');
+    }
   }
 
   function showMenu(key) {
     currentKey = key;
     setTabs(key);
-    var urls = (manifest && manifest[key]) || [];
+    var urls = normalizeEntries((manifest && manifest[key]) || []);
     if (!urls.length) {
       pageLabel.textContent = '—';
       rail.innerHTML = '';
@@ -101,7 +153,7 @@
   }
 
   function loadManifest() {
-    return fetch('./pages/manifest.json?v=20260727g', { cache: 'no-cache' })
+    return fetch('./pages/manifest.json?v=20260728a', { cache: 'no-cache' })
       .then(function (r) {
         if (!r.ok) throw new Error('manifest');
         return r.json();
@@ -124,12 +176,17 @@
   }, { passive: true });
 
   document.addEventListener('keydown', function (e) {
-    if (e.key === 'ArrowRight' || e.key === 'PageDown') goTo(currentIndex() + 1);
-    if (e.key === 'ArrowLeft' || e.key === 'PageUp') goTo(currentIndex() - 1);
+    if (e.key === 'ArrowRight' || e.key === 'PageDown' || e.key === 'ArrowDown') {
+      goTo(currentIndex() + 1);
+    }
+    if (e.key === 'ArrowLeft' || e.key === 'PageUp' || e.key === 'ArrowUp') {
+      goTo(currentIndex() - 1);
+    }
   });
 
   window.addEventListener('resize', function () {
     goTo(currentIndex(), false);
+    updateChrome();
   });
 
   document.getElementById('backBtn').addEventListener('click', function (e) {

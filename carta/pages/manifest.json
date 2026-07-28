@@ -1,23 +1,90 @@
 {
   "cafeteria": [
-    "./pages/cafeteria/01.jpg",
-    "./pages/cafeteria/02.jpg",
-    "./pages/cafeteria/03.jpg",
-    "./pages/cafeteria/04.jpg",
-    "./pages/cafeteria/05.jpg",
-    "./pages/cafeteria/06.jpg"
+    {
+      "src": "./pages/cafeteria/01.jpg",
+      "w": 2358,
+      "h": 1667,
+      "orientation": "landscape"
+    },
+    {
+      "src": "./pages/cafeteria/02.jpg",
+      "w": 2358,
+      "h": 1667,
+      "orientation": "landscape"
+    },
+    {
+      "src": "./pages/cafeteria/03.jpg",
+      "w": 2358,
+      "h": 1667,
+      "orientation": "landscape"
+    }
   ],
   "restaurante": [
-    "./pages/restaurante/01.jpg",
-    "./pages/restaurante/02.jpg",
-    "./pages/restaurante/03.jpg",
-    "./pages/restaurante/04.jpg",
-    "./pages/restaurante/05.jpg",
-    "./pages/restaurante/06.jpg",
-    "./pages/restaurante/07.jpg",
-    "./pages/restaurante/08.jpg",
-    "./pages/restaurante/09.jpg",
-    "./pages/restaurante/10.jpg",
-    "./pages/restaurante/11.jpg"
+    {
+      "src": "./pages/restaurante/01.jpg",
+      "w": 1667,
+      "h": 2358,
+      "orientation": "portrait"
+    },
+    {
+      "src": "./pages/restaurante/02.jpg",
+      "w": 1667,
+      "h": 2358,
+      "orientation": "portrait"
+    },
+    {
+      "src": "./pages/restaurante/03.jpg",
+      "w": 1667,
+      "h": 2358,
+      "orientation": "portrait"
+    },
+    {
+      "src": "./pages/restaurante/04.jpg",
+      "w": 1667,
+      "h": 2358,
+      "orientation": "portrait"
+    },
+    {
+      "src": "./pages/restaurante/05.jpg",
+      "w": 1667,
+      "h": 2358,
+      "orientation": "portrait"
+    },
+    {
+      "src": "./pages/restaurante/06.jpg",
+      "w": 1667,
+      "h": 2358,
+      "orientation": "portrait"
+    },
+    {
+      "src": "./pages/restaurante/07.jpg",
+      "w": 1667,
+      "h": 2358,
+      "orientation": "portrait"
+    },
+    {
+      "src": "./pages/restaurante/08.jpg",
+      "w": 1667,
+      "h": 2358,
+      "orientation": "portrait"
+    },
+    {
+      "src": "./pages/restaurante/09.jpg",
+      "w": 1667,
+      "h": 2358,
+      "orientation": "portrait"
+    },
+    {
+      "src": "./pages/restaurante/10.jpg",
+      "w": 1668,
+      "h": 2359,
+      "orientation": "portrait"
+    },
+    {
+      "src": "./pages/restaurante/11.jpg",
+      "w": 1667,
+      "h": 2358,
+      "orientation": "portrait"
+    }
   ]
 }

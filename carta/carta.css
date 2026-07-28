@@ -1,7 +1,6 @@
 :root {
   --bg: #0a0d08;
   --sand: #f2f0d4;
-  --gold: #d4c97a;
   --ink: #10150e;
   --safe-top: env(safe-area-inset-top, 0px);
   --safe-bottom: env(safe-area-inset-bottom, 0px);
@@ -21,12 +20,11 @@ html, body {
   font-family: var(--font-ui);
   -webkit-font-smoothing: antialiased;
   overscroll-behavior: none;
-  touch-action: pan-x;
 }
 
 body {
-  display: grid;
-  grid-template-rows: var(--top-h) minmax(0, 1fr) var(--dock-h);
+  position: relative;
+  width: 100%;
   height: 100svh;
   max-height: 100svh;
 }
@@ -35,14 +33,20 @@ a { color: inherit; text-decoration: none; }
 button { font: inherit; color: inherit; }
 
 .top {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: var(--top-h);
+  z-index: 20;
   display: grid;
   grid-template-columns: 40px 1fr 40px;
   align-items: center;
   gap: 0.45rem;
   padding: var(--safe-top) 0.55rem 0.25rem;
-  background: #0a0d08;
+  background: rgba(10, 13, 8, 0.96);
   border-bottom: 1px solid rgba(242, 240, 212, 0.1);
-  z-index: 5;
+  backdrop-filter: blur(8px);
 }
 
 .top__btn {
@@ -85,56 +89,101 @@ button { font: inherit; color: inherit; }
 }
 
 .viewer {
-  position: relative;
-  min-height: 0;
-  background: #0a0d08;
+  position: absolute;
+  top: var(--top-h);
+  bottom: var(--dock-h);
+  left: 0;
+  right: 0;
+  z-index: 1;
+  background: #12160f;
+  overflow: hidden;
 }
 
 .rail {
+  width: 100%;
   height: 100%;
   display: flex;
-  overflow-x: auto;
-  overflow-y: hidden;
-  scroll-snap-type: x mandatory;
+  flex-direction: column;
+  overflow-x: hidden;
+  overflow-y: auto;
+  scroll-snap-type: y mandatory;
   scroll-behavior: smooth;
   -webkit-overflow-scrolling: touch;
   scrollbar-width: none;
+  touch-action: pan-y;
 }
 .rail::-webkit-scrollbar { display: none; }
 
 .page {
-  flex: 0 0 100%;
+  position: relative;
+  flex: 0 0 auto;
   width: 100%;
-  height: 100%;
-  scroll-snap-align: center;
+  min-height: 100%;
+  scroll-snap-align: start;
   scroll-snap-stop: always;
-  display: grid;
-  place-items: stretch;
-  padding: 0;
-  background: #0a0d08;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.4rem 0.35rem 0.75rem;
+  background:
+    radial-gradient(ellipse at center, #1a2117 0%, #0a0d08 72%);
 }
 
 .page img {
+  display: block;
   width: 100%;
-  height: 100%;
-  object-fit: contain;
-  object-position: center center;
+  height: auto;
+  max-width: 100%;
   background: #f7f4ea;
-  border-radius: 0;
-  box-shadow: none;
+  border-radius: 4px;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.45);
   user-select: none;
   -webkit-user-drag: none;
 }
 
+.page.is-portrait img {
+  width: min(100%, 560px);
+  margin-inline: auto;
+}
+
+.viewer__hint {
+  position: absolute;
+  left: 50%;
+  bottom: 0.65rem;
+  transform: translateX(-50%);
+  margin: 0;
+  padding: 0.35rem 0.7rem;
+  border-radius: 999px;
+  background: rgba(10, 13, 8, 0.72);
+  border: 1px solid rgba(242, 240, 212, 0.14);
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(242, 240, 212, 0.72);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.35s ease;
+  z-index: 4;
+  white-space: nowrap;
+}
+.viewer__hint.is-visible { opacity: 1; }
+
 .dock {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: var(--dock-h);
+  z-index: 20;
   display: grid;
   grid-template-columns: 44px 1fr 44px;
   align-items: center;
   gap: 0.5rem;
   padding: 0.25rem 0.65rem var(--safe-bottom);
-  background: #0a0d08;
+  background: rgba(10, 13, 8, 0.96);
   border-top: 1px solid rgba(242, 240, 212, 0.1);
-  z-index: 5;
+  backdrop-filter: blur(8px);
 }
 
 .dock__arrow {
@@ -173,13 +222,40 @@ button { font: inherit; color: inherit; }
   color: rgba(242, 240, 212, 0.42);
 }
 
+/* Desktop / wide: horizontal book carousel, pages fit the frame */
 @media (min-width: 900px) {
+  .rail {
+    flex-direction: row;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-snap-type: x mandatory;
+    touch-action: pan-x;
+  }
+
   .page {
-    padding: 0.5rem 12vw;
-    background: #0a0d08;
+    flex: 0 0 100%;
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+    scroll-snap-align: center;
+    padding: 1rem 7vw;
   }
-  .page img {
-    border-radius: 10px;
-    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
+
+  .page img,
+  .page.is-portrait img {
+    width: auto;
+    height: auto;
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    border-radius: 8px;
+    box-shadow: 0 22px 55px rgba(0, 0, 0, 0.5);
   }
+
+  .viewer__hint { display: none; }
+  .dock__hint::after { content: none; }
+}
+
+@media (max-width: 899px) {
+  .dock__hint { letter-spacing: 0.1em; }
 }
