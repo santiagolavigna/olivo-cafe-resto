@@ -1,15 +1,18 @@
 (function () {
   'use strict';
 
-  var VERSION = '20260728b';
+  var VERSION = '20260728c';
   var PDFS = {
     cafeteria: '../assets/menu-cafeteria.pdf',
     restaurante: '../assets/menu-restaurante.pdf'
   };
+  var MOUNT_TIMEOUT_MS = 12000;
+  var PRELOAD_TIMEOUT_MS = 8000;
 
   var viewer = document.getElementById('viewer');
   var bookWrap = document.getElementById('bookWrap');
   var loader = document.getElementById('loader');
+  var loaderText = loader ? loader.querySelector('p') : null;
   var bookError = document.getElementById('bookError');
   var rail = document.getElementById('rail');
   var pageLabel = document.getElementById('pageLabel');
@@ -26,6 +29,7 @@
   var currentKey = 'cafeteria';
   var builtNarrow = null;
   var loadToken = 0;
+  var mountWatchdog = null;
 
   function isNarrow() {
     return viewer.clientWidth < 760;
@@ -80,20 +84,26 @@
   }
 
   function bookSize(ratio) {
-    var stageW = Math.max(viewer.clientWidth - 12, 240);
-    var stageH = Math.max(viewer.clientHeight - 12, 280);
-    var narrow = isNarrow();
+    var stageW = Math.max(viewer.clientWidth - 8, 240);
+    var stageH = Math.max(viewer.clientHeight - 8, 280);
     var safeRatio = ratio > 0.2 && isFinite(ratio) ? ratio : 1.414;
-    var maxW = Math.min(
-      540,
-      Math.floor(stageH / safeRatio),
-      narrow ? stageW : Math.floor(stageW / 2)
-    );
-    maxW = Math.max(180, maxW);
-    var baseW = Math.max(200, Math.min(maxW, Math.floor(stageW * (narrow ? 0.96 : 0.88))));
+
+    if (isNarrow()) {
+      return {
+        width: Math.max(200, Math.floor(stageW * 0.96)),
+        height: Math.max(240, Math.floor(stageW * 0.96 * safeRatio))
+      };
+    }
+
+    /* Desktop: ocupar casi todo el visor (spread = 2 páginas) */
+    var maxSpreadW = stageW * 0.98;
+    var maxPageH = stageH * 0.98;
+    var pageW = Math.min(maxSpreadW / 2, maxPageH / safeRatio);
+    pageW = Math.max(220, Math.floor(pageW));
+
     return {
-      width: baseW,
-      height: Math.max(240, Math.floor(baseW * safeRatio))
+      width: pageW,
+      height: Math.max(240, Math.floor(pageW * safeRatio))
     };
   }
 
@@ -113,6 +123,51 @@
         requestAnimationFrame(resolve);
       });
     });
+  }
+
+  function withTimeout(promise, ms, label) {
+    return new Promise(function (resolve, reject) {
+      var done = false;
+      var timer = window.setTimeout(function () {
+        if (done) return;
+        done = true;
+        reject(new Error(label || 'timeout'));
+      }, ms);
+      promise.then(function (value) {
+        if (done) return;
+        done = true;
+        window.clearTimeout(timer);
+        resolve(value);
+      }, function (err) {
+        if (done) return;
+        done = true;
+        window.clearTimeout(timer);
+        reject(err);
+      });
+    });
+  }
+
+  function preloadImages(urls) {
+    return Promise.all(urls.map(function (url, index) {
+      return withTimeout(new Promise(function (resolve, reject) {
+        var img = new Image();
+        img.decoding = 'async';
+        img.onload = function () { resolve(url); };
+        img.onerror = function () { reject(new Error('img-' + index)); };
+        img.src = url;
+      }), PRELOAD_TIMEOUT_MS, 'img-timeout-' + index);
+    }));
+  }
+
+  function setLoaderMsg(msg) {
+    if (loaderText) loaderText.textContent = msg;
+  }
+
+  function clearWatchdog() {
+    if (mountWatchdog) {
+      window.clearTimeout(mountWatchdog);
+      mountWatchdog = null;
+    }
   }
 
   function updateChrome() {
@@ -181,8 +236,13 @@
     rail.innerHTML = '';
   }
 
-  function showFlipBook() {
+  function finishLoading() {
+    clearWatchdog();
     loader.hidden = true;
+  }
+
+  function showFlipBook() {
+    finishLoading();
     bookWrap.hidden = false;
     bookWrap.classList.remove('is-mounting');
     rail.hidden = true;
@@ -192,7 +252,7 @@
   }
 
   function showScrollBook() {
-    loader.hidden = true;
+    finishLoading();
     bookWrap.hidden = true;
     rail.hidden = false;
     rail.removeAttribute('aria-hidden');
@@ -201,52 +261,95 @@
   }
 
   function showError() {
-    loader.hidden = true;
+    finishLoading();
     bookWrap.hidden = true;
     rail.hidden = true;
     bookError.hidden = false;
     scrollMode = false;
   }
 
-  function mountFlipBook(entries) {
-    destroyBook();
-    var ratio = pageRatio(entries);
-    var size = bookSize(ratio);
-    var images = entries.map(function (e) { return imageUrl(e.src); });
-
-    if (images.length % 2 === 1) {
-      images.push(blankPageDataUrl(800, Math.round(800 * ratio)));
-    }
-
-    bookWrap.hidden = false;
-    bookWrap.classList.add('is-mounting');
-
-    var el = document.getElementById('book');
-    pageFlip = new window.St.PageFlip(el, {
-      width: size.width,
-      height: size.height,
-      size: 'fixed',
-      minWidth: size.width,
-      maxWidth: size.width,
-      minHeight: size.height,
-      maxHeight: size.height,
-      showCover: false,
-      maxShadowOpacity: 0.42,
-      flippingTime: 650,
-      mobileScrollSupport: false,
-      usePortrait: true,
-      swipeDistance: 24,
-      useMouseEvents: true,
-      autoSize: false
+  function waitFlipInit(flip) {
+    return new Promise(function (resolve) {
+      var done = false;
+      function finish() {
+        if (done) return;
+        done = true;
+        resolve();
+      }
+      try {
+        flip.on('init', finish);
+      } catch (e) {
+        finish();
+        return;
+      }
+      window.setTimeout(finish, 1500);
     });
-
-    pageFlip.on('flip', updateChrome);
-    pageFlip.loadFromImages(images);
-    showFlipBook();
-    updateChrome();
   }
 
-  function mountScrollBook(entries) {
+  function mountFlipBook(entries, token) {
+    return new Promise(function (resolve, reject) {
+      try {
+        destroyBook();
+        var ratio = pageRatio(entries);
+        var size = bookSize(ratio);
+        var images = entries.map(function (e) { return imageUrl(e.src); });
+
+        if (images.length % 2 === 1) {
+          images.push(blankPageDataUrl(800, Math.round(800 * ratio)));
+        }
+
+        setLoaderMsg('Cargando páginas…');
+        preloadImages(images.slice(0, Math.min(3, images.length)))
+          .then(function () {
+            if (token !== loadToken) throw new Error('cancelled');
+            return preloadImages(images);
+          })
+          .then(function () {
+            if (token !== loadToken) throw new Error('cancelled');
+            setLoaderMsg('Armando el libro…');
+            bookWrap.hidden = false;
+            bookWrap.classList.add('is-mounting');
+
+            var el = document.getElementById('book');
+            pageFlip = new window.St.PageFlip(el, {
+              width: size.width,
+              height: size.height,
+              size: 'fixed',
+              minWidth: size.width,
+              maxWidth: size.width,
+              minHeight: size.height,
+              maxHeight: size.height,
+              showCover: false,
+              maxShadowOpacity: 0.42,
+              flippingTime: 650,
+              mobileScrollSupport: false,
+              usePortrait: true,
+              swipeDistance: 24,
+              useMouseEvents: true,
+              autoSize: false
+            });
+
+            pageFlip.on('flip', updateChrome);
+            pageFlip.loadFromImages(images);
+            return waitFlipInit(pageFlip);
+          })
+          .then(function () {
+            if (token !== loadToken) throw new Error('cancelled');
+            showFlipBook();
+            updateChrome();
+            resolve();
+          })
+          .catch(reject);
+      } catch (e) {
+        reject(e);
+      }
+    });
+  }
+
+  function mountScrollBook(entries, token) {
+    if (token !== undefined && token !== loadToken) {
+      return Promise.reject(new Error('cancelled'));
+    }
     destroyBook();
     rail.innerHTML = '';
     scrollPages = [];
@@ -275,17 +378,20 @@
     showScrollBook();
     scrollGoTo(0, false);
     updateChrome();
+    return Promise.resolve();
   }
 
-  function mountBook(entries) {
+  function mountBook(entries, token) {
     builtNarrow = isNarrow();
 
-    /* Mobile: scroll horizontal (swipe natural). Desktop: efecto libro. */
     if (builtNarrow || !hasFlipLib()) {
-      mountScrollBook(entries);
-      return;
+      return mountScrollBook(entries, token);
     }
-    mountFlipBook(entries);
+
+    return mountFlipBook(entries, token).catch(function (err) {
+      if (err && err.message === 'cancelled') throw err;
+      return mountScrollBook(entries, token);
+    });
   }
 
   function showMenu(key) {
@@ -293,6 +399,18 @@
     currentKey = key;
     setTabs(key);
     hideAllViews();
+    setLoaderMsg('Armando el libro…');
+
+    clearWatchdog();
+    mountWatchdog = window.setTimeout(function () {
+      if (token !== loadToken) return;
+      var fallbackEntries = normalizeEntries((manifest && manifest[key]) || []);
+      if (!fallbackEntries.length) {
+        showError();
+        return;
+      }
+      mountScrollBook(fallbackEntries, token);
+    }, MOUNT_TIMEOUT_MS);
 
     var entries = normalizeEntries((manifest && manifest[key]) || []);
     if (!entries.length) {
@@ -303,15 +421,13 @@
 
     waitLayout().then(function () {
       if (token !== loadToken) return;
-      try {
-        mountBook(entries);
-      } catch (e) {
-        try {
-          mountScrollBook(entries);
-        } catch (e2) {
-          showError();
-        }
-      }
+      return mountBook(entries, token);
+    }).catch(function (err) {
+      if (token !== loadToken || (err && err.message === 'cancelled')) return;
+      return mountScrollBook(entries, token);
+    }).finally(function () {
+      if (token !== loadToken) return;
+      finishLoading();
     });
   }
 
@@ -361,21 +477,30 @@
     window.clearTimeout(resizeTimer);
     resizeTimer = window.setTimeout(function () {
       if (!manifest || !manifest[currentKey]) return;
-      var entries = normalizeEntries(manifest[currentKey]);
-      var idx = scrollMode ? scrollCurrentIndex() : (pageFlip ? pageFlip.getCurrentPageIndex() : 0);
-
-      if (scrollMode) {
-        if (hasFlipLib()) {
-          mountFlipBook(entries);
-          if (pageFlip) pageFlip.turnToPage(idx);
-        } else {
-          scrollGoTo(idx, false);
-        }
-      } else if (pageFlip) {
-        mountFlipBook(entries);
-        if (pageFlip) pageFlip.turnToPage(idx);
+      var narrowNow = isNarrow();
+      if (narrowNow !== builtNarrow) {
+        showMenu(currentKey);
+        return;
       }
-      updateChrome();
+      if (scrollMode) {
+        scrollGoTo(scrollCurrentIndex(), false);
+        updateChrome();
+        return;
+      }
+      if (pageFlip) {
+        var idx = pageFlip.getCurrentPageIndex();
+        var resizeToken = loadToken;
+        mountFlipBook(normalizeEntries(manifest[currentKey]), resizeToken)
+          .then(function () {
+            if (resizeToken !== loadToken) return;
+            if (pageFlip) pageFlip.turnToPage(idx);
+            updateChrome();
+          })
+          .catch(function (err) {
+            if (resizeToken !== loadToken || (err && err.message === 'cancelled')) return;
+            mountScrollBook(normalizeEntries(manifest[currentKey]), resizeToken);
+          });
+      }
     }, 180);
   });
 

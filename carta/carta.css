@@ -261,7 +261,13 @@ button { font: inherit; color: inherit; }
 }
 
 @media (min-width: 900px) {
-  .viewer { padding: 0.5rem 0; }
+  .viewer {
+    padding: 0.15rem 0;
+  }
+
+  .book-wrap {
+    filter: drop-shadow(0 34px 60px rgba(0, 0, 0, 0.5));
+  }
 }
 
 @media (max-width: 899px) {
