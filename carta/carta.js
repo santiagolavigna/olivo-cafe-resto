@@ -1,25 +1,38 @@
 (function () {
   'use strict';
 
+  var VERSION = '20260728b';
   var PDFS = {
     cafeteria: '../assets/menu-cafeteria.pdf',
     restaurante: '../assets/menu-restaurante.pdf'
   };
 
+  var viewer = document.getElementById('viewer');
+  var bookWrap = document.getElementById('bookWrap');
+  var loader = document.getElementById('loader');
+  var bookError = document.getElementById('bookError');
   var rail = document.getElementById('rail');
   var pageLabel = document.getElementById('pageLabel');
   var prevBtn = document.getElementById('prevBtn');
   var nextBtn = document.getElementById('nextBtn');
   var pdfBtn = document.getElementById('pdfBtn');
-  var zoomHint = document.getElementById('zoomHint');
   var dockHint = document.getElementById('dockHint');
   var tabs = Array.prototype.slice.call(document.querySelectorAll('.top__tab'));
-  var pages = [];
-  var currentKey = 'cafeteria';
-  var manifest = null;
 
-  function isDesktop() {
-    return window.matchMedia('(min-width: 900px)').matches;
+  var pageFlip = null;
+  var scrollMode = false;
+  var scrollPages = [];
+  var manifest = null;
+  var currentKey = 'cafeteria';
+  var builtNarrow = null;
+  var loadToken = 0;
+
+  function isNarrow() {
+    return viewer.clientWidth < 760;
+  }
+
+  function hasFlipLib() {
+    return !!(window.St && window.St.PageFlip);
   }
 
   function keyFromUrl() {
@@ -56,60 +69,195 @@
     });
   }
 
-  function currentIndex() {
-    if (!pages.length) return 0;
-    if (isDesktop()) {
-      var x = rail.scrollLeft;
-      var w = rail.clientWidth || 1;
-      return Math.max(0, Math.min(pages.length - 1, Math.round(x / w)));
-    }
-    var mid = rail.scrollTop + rail.clientHeight * 0.35;
-    var best = 0;
-    var bestDist = Infinity;
-    pages.forEach(function (slide, i) {
-      var dist = Math.abs(slide.offsetTop - mid + slide.offsetHeight * 0.2);
-      if (dist < bestDist) {
-        bestDist = dist;
-        best = i;
-      }
+  function imageUrl(src) {
+    return src + (src.indexOf('?') >= 0 ? '&' : '?') + 'v=' + VERSION;
+  }
+
+  function pageRatio(entries) {
+    var first = entries[0];
+    if (first && first.w && first.h) return first.h / first.w;
+    return 1.414;
+  }
+
+  function bookSize(ratio) {
+    var stageW = Math.max(viewer.clientWidth - 12, 240);
+    var stageH = Math.max(viewer.clientHeight - 12, 280);
+    var narrow = isNarrow();
+    var safeRatio = ratio > 0.2 && isFinite(ratio) ? ratio : 1.414;
+    var maxW = Math.min(
+      540,
+      Math.floor(stageH / safeRatio),
+      narrow ? stageW : Math.floor(stageW / 2)
+    );
+    maxW = Math.max(180, maxW);
+    var baseW = Math.max(200, Math.min(maxW, Math.floor(stageW * (narrow ? 0.96 : 0.88))));
+    return {
+      width: baseW,
+      height: Math.max(240, Math.floor(baseW * safeRatio))
+    };
+  }
+
+  function blankPageDataUrl(width, height) {
+    var c = document.createElement('canvas');
+    c.width = Math.max(2, width || 800);
+    c.height = Math.max(2, height || 1100);
+    var ctx = c.getContext('2d');
+    ctx.fillStyle = '#f7f4ea';
+    ctx.fillRect(0, 0, c.width, c.height);
+    return c.toDataURL('image/jpeg', 0.72);
+  }
+
+  function waitLayout() {
+    return new Promise(function (resolve) {
+      requestAnimationFrame(function () {
+        requestAnimationFrame(resolve);
+      });
     });
-    return best;
   }
 
   function updateChrome() {
-    var i = currentIndex();
-    pageLabel.textContent = (i + 1) + ' / ' + Math.max(pages.length, 1);
-    prevBtn.disabled = i <= 0;
-    nextBtn.disabled = i >= pages.length - 1;
+    var total = 1;
+    var current = 0;
+
+    if (scrollMode) {
+      total = scrollPages.length || 1;
+      current = scrollCurrentIndex();
+    } else if (pageFlip) {
+      try {
+        total = pageFlip.getPageCount() || 1;
+        current = pageFlip.getCurrentPageIndex();
+      } catch (e) { /* noop */ }
+    }
+
+    pageLabel.textContent = (current + 1) + ' / ' + total;
+    prevBtn.disabled = current <= 0;
+    nextBtn.disabled = current >= total - 1;
+
     if (dockHint) {
-      dockHint.textContent = isDesktop() ? 'Flechas o deslizá' : 'Deslizá hacia abajo';
+      dockHint.textContent = scrollMode
+        ? 'Deslizá horizontalmente'
+        : (isNarrow() ? 'Deslizá para pasar página' : 'Arrastrá la esquina o flechas');
     }
   }
 
-  function goTo(i, smooth) {
-    if (!pages.length) return;
-    i = Math.max(0, Math.min(pages.length - 1, i));
-    var behavior = smooth === false ? 'auto' : 'smooth';
-    if (isDesktop()) {
-      rail.scrollTo({ left: i * rail.clientWidth, top: 0, behavior: behavior });
-    } else {
-      rail.scrollTo({ top: pages[i].offsetTop, left: 0, behavior: behavior });
-    }
-    window.setTimeout(updateChrome, smooth === false ? 0 : 280);
+  function scrollCurrentIndex() {
+    if (!scrollPages.length) return 0;
+    var x = rail.scrollLeft;
+    var w = rail.clientWidth || 1;
+    return Math.max(0, Math.min(scrollPages.length - 1, Math.round(x / w)));
   }
 
-  function buildRail(entries) {
+  function scrollGoTo(i, smooth) {
+    if (!scrollPages.length) return;
+    i = Math.max(0, Math.min(scrollPages.length - 1, i));
+    rail.scrollTo({
+      left: i * rail.clientWidth,
+      behavior: smooth === false ? 'auto' : 'smooth'
+    });
+    window.setTimeout(updateChrome, smooth === false ? 0 : 260);
+  }
+
+  function destroyBook() {
+    if (pageFlip) {
+      try { pageFlip.destroy(); } catch (e) { /* noop */ }
+      pageFlip = null;
+    }
+    var old = document.getElementById('book');
+    var fresh = document.createElement('div');
+    fresh.id = 'book';
+    if (old && old.parentNode) old.parentNode.replaceChild(fresh, old);
+    else if (bookWrap) bookWrap.appendChild(fresh);
+  }
+
+  function hideAllViews() {
+    loader.hidden = false;
+    bookWrap.hidden = true;
+    bookWrap.classList.remove('is-mounting');
+    rail.hidden = true;
+    rail.setAttribute('aria-hidden', 'true');
+    bookError.hidden = true;
+    scrollMode = false;
+    scrollPages = [];
     rail.innerHTML = '';
-    pages = [];
+  }
+
+  function showFlipBook() {
+    loader.hidden = true;
+    bookWrap.hidden = false;
+    bookWrap.classList.remove('is-mounting');
+    rail.hidden = true;
+    rail.setAttribute('aria-hidden', 'true');
+    bookError.hidden = true;
+    scrollMode = false;
+  }
+
+  function showScrollBook() {
+    loader.hidden = true;
+    bookWrap.hidden = true;
+    rail.hidden = false;
+    rail.removeAttribute('aria-hidden');
+    bookError.hidden = true;
+    scrollMode = true;
+  }
+
+  function showError() {
+    loader.hidden = true;
+    bookWrap.hidden = true;
+    rail.hidden = true;
+    bookError.hidden = false;
+    scrollMode = false;
+  }
+
+  function mountFlipBook(entries) {
+    destroyBook();
+    var ratio = pageRatio(entries);
+    var size = bookSize(ratio);
+    var images = entries.map(function (e) { return imageUrl(e.src); });
+
+    if (images.length % 2 === 1) {
+      images.push(blankPageDataUrl(800, Math.round(800 * ratio)));
+    }
+
+    bookWrap.hidden = false;
+    bookWrap.classList.add('is-mounting');
+
+    var el = document.getElementById('book');
+    pageFlip = new window.St.PageFlip(el, {
+      width: size.width,
+      height: size.height,
+      size: 'fixed',
+      minWidth: size.width,
+      maxWidth: size.width,
+      minHeight: size.height,
+      maxHeight: size.height,
+      showCover: false,
+      maxShadowOpacity: 0.42,
+      flippingTime: 650,
+      mobileScrollSupport: false,
+      usePortrait: true,
+      swipeDistance: 24,
+      useMouseEvents: true,
+      autoSize: false
+    });
+
+    pageFlip.on('flip', updateChrome);
+    pageFlip.loadFromImages(images);
+    showFlipBook();
+    updateChrome();
+  }
+
+  function mountScrollBook(entries) {
+    destroyBook();
+    rail.innerHTML = '';
+    scrollPages = [];
 
     entries.forEach(function (entry, n) {
       var slide = document.createElement('article');
-      var orient = entry.orientation || 'portrait';
-      slide.className = 'page is-' + orient;
+      slide.className = 'page is-' + (entry.orientation || 'portrait');
       slide.setAttribute('aria-label', 'Página ' + (n + 1));
 
       var img = document.createElement('img');
-      img.src = entry.src + (entry.src.indexOf('?') >= 0 ? '&' : '?') + 'v=20260728a';
+      img.src = imageUrl(entry.src);
       img.alt = 'Carta Olivo · página ' + (n + 1);
       img.decoding = 'async';
       img.loading = n === 0 ? 'eager' : 'lazy';
@@ -121,43 +269,70 @@
 
       slide.appendChild(img);
       rail.appendChild(slide);
-      pages.push(slide);
-
-      if (n > 0 && n < 3) {
-        var pre = new Image();
-        pre.src = img.src;
-      }
+      scrollPages.push(slide);
     });
 
-    goTo(0, false);
+    showScrollBook();
+    scrollGoTo(0, false);
     updateChrome();
+  }
 
-    if (!isDesktop()) {
-      zoomHint.classList.add('is-visible');
-      window.setTimeout(function () { zoomHint.classList.remove('is-visible'); }, 2600);
-    } else {
-      zoomHint.classList.remove('is-visible');
+  function mountBook(entries) {
+    builtNarrow = isNarrow();
+
+    /* Mobile: scroll horizontal (swipe natural). Desktop: efecto libro. */
+    if (builtNarrow || !hasFlipLib()) {
+      mountScrollBook(entries);
+      return;
     }
+    mountFlipBook(entries);
   }
 
   function showMenu(key) {
+    var token = ++loadToken;
     currentKey = key;
     setTabs(key);
-    var urls = normalizeEntries((manifest && manifest[key]) || []);
-    if (!urls.length) {
+    hideAllViews();
+
+    var entries = normalizeEntries((manifest && manifest[key]) || []);
+    if (!entries.length) {
       pageLabel.textContent = '—';
-      rail.innerHTML = '';
+      showError();
       return;
     }
-    buildRail(urls);
+
+    waitLayout().then(function () {
+      if (token !== loadToken) return;
+      try {
+        mountBook(entries);
+      } catch (e) {
+        try {
+          mountScrollBook(entries);
+        } catch (e2) {
+          showError();
+        }
+      }
+    });
   }
 
   function loadManifest() {
-    return fetch('./pages/manifest.json?v=20260728a', { cache: 'no-cache' })
+    return fetch('./pages/manifest.json?v=' + VERSION, { cache: 'no-cache' })
       .then(function (r) {
         if (!r.ok) throw new Error('manifest');
         return r.json();
       });
+  }
+
+  function flip(dir) {
+    if (scrollMode) {
+      scrollGoTo(scrollCurrentIndex() + dir);
+      return;
+    }
+    if (!pageFlip) return;
+    try {
+      if (dir > 0) pageFlip.flipNext('bottom');
+      else pageFlip.flipPrev('bottom');
+    } catch (e) { /* noop */ }
   }
 
   tabs.forEach(function (tab) {
@@ -167,26 +342,41 @@
     });
   });
 
-  prevBtn.addEventListener('click', function () { goTo(currentIndex() - 1); });
-  nextBtn.addEventListener('click', function () { goTo(currentIndex() + 1); });
+  prevBtn.addEventListener('click', function () { flip(-1); });
+  nextBtn.addEventListener('click', function () { flip(1); });
 
   rail.addEventListener('scroll', function () {
+    if (!scrollMode) return;
     window.clearTimeout(rail._t);
     rail._t = window.setTimeout(updateChrome, 60);
   }, { passive: true });
 
   document.addEventListener('keydown', function (e) {
-    if (e.key === 'ArrowRight' || e.key === 'PageDown' || e.key === 'ArrowDown') {
-      goTo(currentIndex() + 1);
-    }
-    if (e.key === 'ArrowLeft' || e.key === 'PageUp' || e.key === 'ArrowUp') {
-      goTo(currentIndex() - 1);
-    }
+    if (e.key === 'ArrowRight' || e.key === 'PageDown') flip(1);
+    if (e.key === 'ArrowLeft' || e.key === 'PageUp') flip(-1);
   });
 
+  var resizeTimer;
   window.addEventListener('resize', function () {
-    goTo(currentIndex(), false);
-    updateChrome();
+    window.clearTimeout(resizeTimer);
+    resizeTimer = window.setTimeout(function () {
+      if (!manifest || !manifest[currentKey]) return;
+      var entries = normalizeEntries(manifest[currentKey]);
+      var idx = scrollMode ? scrollCurrentIndex() : (pageFlip ? pageFlip.getCurrentPageIndex() : 0);
+
+      if (scrollMode) {
+        if (hasFlipLib()) {
+          mountFlipBook(entries);
+          if (pageFlip) pageFlip.turnToPage(idx);
+        } else {
+          scrollGoTo(idx, false);
+        }
+      } else if (pageFlip) {
+        mountFlipBook(entries);
+        if (pageFlip) pageFlip.turnToPage(idx);
+      }
+      updateChrome();
+    }, 180);
   });
 
   document.getElementById('backBtn').addEventListener('click', function (e) {
@@ -203,6 +393,6 @@
     })
     .catch(function () {
       pageLabel.textContent = 'Error';
-      rail.innerHTML = '<p style="margin:auto;padding:2rem;text-align:center">No pudimos cargar la carta. <a href="' + PDFS.cafeteria + '" style="color:#d4c97a">Abrir PDF</a></p>';
+      showError();
     });
 })();

@@ -2,16 +2,17 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=5" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <title>Nuestra carta · Olivo Café Resto</title>
-  <meta name="description" content="La carta de Olivo Café Resto. Deslizá para ver cafetería y restaurante." />
+  <meta name="description" content="La carta de Olivo Café Resto. Hojéala como un libro." />
   <meta name="theme-color" content="#0a0d08" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <link rel="icon" type="image/svg+xml" href="../assets/img/logo.svg" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@600;700;800&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="./carta.css?v=20260728a" />
+  <link rel="stylesheet" href="./carta.css?v=20260728b" />
 </head>
 <body>
   <header class="top">
@@ -28,8 +29,18 @@
   </header>
 
   <main class="viewer" id="viewer" aria-label="Carta Olivo">
-    <div class="rail" id="rail"></div>
-    <p class="viewer__hint" id="zoomHint">Deslizá hacia abajo</p>
+    <div class="loader" id="loader">
+      <span class="loader__ring" aria-hidden="true"></span>
+      <p>Armando el libro…</p>
+    </div>
+    <div class="book-wrap" id="bookWrap" hidden>
+      <div id="book"></div>
+    </div>
+    <div class="rail" id="rail" hidden aria-hidden="true"></div>
+    <p class="viewer__error" id="bookError" hidden>
+      No pudimos cargar la carta.
+      <a href="../assets/menu-cafeteria.pdf" target="_blank" rel="noopener">Abrir PDF</a>
+    </p>
   </main>
 
   <footer class="dock">
@@ -38,13 +49,49 @@
     </button>
     <div class="dock__meta">
       <span id="pageLabel">1 / 1</span>
-      <span class="dock__hint" id="dockHint">Deslizá para pasar</span>
+      <span class="dock__hint" id="dockHint">Deslizá horizontalmente</span>
     </div>
     <button type="button" class="dock__arrow" id="nextBtn" aria-label="Siguiente">
       <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
     </button>
   </footer>
 
-  <script src="./carta.js?v=20260728a" defer></script>
+  <script>
+    (function () {
+      function loadScript(src, fallback) {
+        return new Promise(function (resolve, reject) {
+          var s = document.createElement('script');
+          s.src = src;
+          s.async = false;
+          s.onload = function () { resolve(); };
+          s.onerror = function () {
+            if (!fallback) { reject(new Error(src)); return; }
+            var s2 = document.createElement('script');
+            s2.src = fallback;
+            s2.async = false;
+            s2.onload = function () { resolve(); };
+            s2.onerror = function () { reject(new Error(fallback)); };
+            document.head.appendChild(s2);
+          };
+          document.head.appendChild(s);
+        });
+      }
+
+      loadScript(
+        'https://cdn.jsdelivr.net/npm/page-flip@2.0.7/dist/js/page-flip.browser.js',
+        'https://unpkg.com/page-flip@2.0.7/dist/js/page-flip.browser.js'
+      )
+        .then(function () {
+          var app = document.createElement('script');
+          app.src = './carta.js?v=20260728b';
+          document.body.appendChild(app);
+        })
+        .catch(function () {
+          var app = document.createElement('script');
+          app.src = './carta.js?v=20260728b';
+          document.body.appendChild(app);
+        });
+    })();
+  </script>
 </body>
 </html>
