@@ -1,7 +1,7 @@
 (function () {
   'use strict';
 
-  var VERSION = '20260728d';
+  var VERSION = '20260728e';
   var PDFS = {
     cafeteria: '../assets/menu-cafeteria.pdf',
     restaurante: '../assets/menu-restaurante.pdf'
@@ -149,6 +149,7 @@
   function showMenu(key) {
     currentKey = key;
     setTabs(key);
+    bookError.hidden = true;
 
     var entries = normalizeEntries(
       (manifest && manifest[key]) || FALLBACK[key] || []

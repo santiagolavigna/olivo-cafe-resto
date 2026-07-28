@@ -167,6 +167,9 @@ button { font: inherit; color: inherit; }
   background: rgba(10, 13, 8, 0.92);
   z-index: 4;
 }
+.viewer__error[hidden] {
+  display: none !important;
+}
 .viewer__error a {
   color: var(--gold);
   border-bottom: 1px solid rgba(212, 201, 122, 0.45);
@@ -226,18 +229,20 @@ button { font: inherit; color: inherit; }
 
 @media (min-width: 900px) {
   .page {
-    padding: 0.75rem 2.5vw;
+    padding: 0.35rem 1vw;
   }
   .page img {
     border-radius: 8px;
     box-shadow: 0 24px 55px rgba(0, 0, 0, 0.5);
   }
+  /* Fill as much of the viewer as possible */
   .page.is-landscape img,
   .page.is-portrait img {
     width: auto;
-    height: auto;
+    height: 100%;
     max-width: 100%;
     max-height: 100%;
+    object-fit: contain;
   }
   .dock__arrow { opacity: 1; }
 }
